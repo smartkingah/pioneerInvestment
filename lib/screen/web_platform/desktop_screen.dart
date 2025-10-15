@@ -31,7 +31,8 @@ class _DesktopScreenState extends State<DesktopScreen> {
         AmbassadorPage(),
         InvestProFooter(),
 
-        /// nothing much done yet
+        /// nothing much really done yet
+        ///
       ],
     );
   }
