@@ -30,6 +30,8 @@ class _DesktopScreenState extends State<DesktopScreen> {
         SecurityAssurancePage(),
         AmbassadorPage(),
         InvestProFooter(),
+
+        /// nothing much done yet
       ],
     );
   }
