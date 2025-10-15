@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base href="$FLUTTER_BASE_HREF">
+    <meta charset="UTF-8">
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+    <meta
+      name="description"
+      content="InvestPro Capital – Secure, transparent investment platform for modern investors."
+    >
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="InvestPro Capital">
+    <link rel="apple-touch-icon" href="icons/Icon-192.png">
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <title>InvestPro Capital</title>
+    <link rel="manifest" href="manifest.json">
+
+    <!-- ✅ Load Tawk BEFORE Flutter -->
+    <script type="text/javascript">
+      window.tawkToReady = false;
+      window.Tawk_API = window.Tawk_API || {};
+      window.Tawk_LoadStart = new Date();
+
+      (function () {
+        var s1 = document.createElement("script");
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/68f0160d77da6c19514abf85/1j7ktca8a';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin', '*');
+
+        s1.onload = function () {
+          console.log("✅ Tawk.to widget fully loaded");
+          window.tawkToReady = true;
+        };
+
+        var s0 = document.getElementsByTagName("script")[0];
+        s0.parentNode.insertBefore(s1, s0);
+      })();
+    </script>
+  </head>
+
+  <body>
+    <script src="flutter_bootstrap.js" async></script>
+  </body>
+</html>
