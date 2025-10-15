@@ -19,6 +19,7 @@ class _DesktopScreenState extends State<DesktopScreen> {
   @override
   Widget build(BuildContext context) {
     return ListView(
+      physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       children: [
         AboutInvestProPage(),

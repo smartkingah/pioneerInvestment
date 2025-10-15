@@ -58,7 +58,7 @@ class InvestmentLandingPage extends StatelessWidget {
 
           ///customer care
           /// customer care floating bottom-right
-          Positioned(bottom: 8, right: 8, child: CustomerCareSection()),
+          // Positioned(bottom: 8, right: 8, child: CustomerCareSection()),
         ],
       ),
     );
