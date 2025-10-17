@@ -11,6 +11,8 @@ class InvestmentLandingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isMobile = screenWidth < 600;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -24,6 +26,7 @@ class InvestmentLandingPage extends StatelessWidget {
                   child: Stack(
                     children: [
                       Container(
+                        height: MediaQuery.of(context).size.height / 1,
                         width: MediaQuery.of(context).size.width,
                         child: CachedNetworkImage(
                           fit: BoxFit.cover,
@@ -58,7 +61,12 @@ class InvestmentLandingPage extends StatelessWidget {
 
           ///customer care
           /// customer care floating bottom-right
-          // Positioned(bottom: 8, right: 8, child: CustomerCareSection()),
+          // Positioned(
+          //   bottom: 8,
+          //   right: 8,
+          //   child:
+          //   // CustomerCareSection(),
+          // ),
         ],
       ),
     );

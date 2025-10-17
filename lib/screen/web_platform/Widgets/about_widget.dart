@@ -8,7 +8,7 @@ class AboutInvestProPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final bool isMobile = screenWidth < 800;
+    final bool isMobile = screenWidth < 600;
 
     return Container(
       color: Colors.transparent,
@@ -37,29 +37,33 @@ class AboutInvestProPage extends StatelessWidget {
     );
   }
 
-  /// 📱 Mobile Layout
+  /// 📱 Mobile Layout (scroll-safe)
   Widget _buildMobileLayout(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _buildImageSection(),
-        const SizedBox(height: 40),
-        _buildTextSection(isMobile: true),
-      ],
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildImageSection(),
+            const SizedBox(height: 40),
+            _buildTextSection(isMobile: true),
+          ],
+        ),
+      ),
     );
   }
 
-  /// Text Section (used for both mobile & desktop)
+  /// 📝 Text Section (shared for both layouts)
   Widget _buildTextSection({required bool isMobile}) {
     return Column(
       crossAxisAlignment: isMobile
           ? CrossAxisAlignment.center
           : CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: isMobile
-              ? MainAxisAlignment.center
-              : MainAxisAlignment.start,
+        // ✅ Wrap instead of Row to prevent overflow
+        Wrap(
+          spacing: 4,
+          alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
           children: [
             Text(
               'About ',
@@ -71,6 +75,7 @@ class AboutInvestProPage extends StatelessWidget {
             ),
             Text(
               'Pioneer Capital Limited',
+              textAlign: TextAlign.center,
               style: GoogleFonts.playfairDisplay(
                 fontSize: isMobile ? 30 : 38,
                 fontWeight: FontWeight.bold,
@@ -104,7 +109,7 @@ class AboutInvestProPage extends StatelessWidget {
     );
   }
 
-  /// Image Section with Badge
+  /// 🖼️ Image Section with Badge
   Widget _buildImageSection() {
     return Stack(
       alignment: Alignment.topRight,
@@ -165,7 +170,7 @@ class AboutInvestProPage extends StatelessWidget {
     );
   }
 
-  /// Reusable paragraph builder
+  /// 🧩 Reusable paragraph builder
   Widget _buildParagraph(
     String text,
     Color color,

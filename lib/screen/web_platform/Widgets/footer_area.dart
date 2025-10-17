@@ -41,7 +41,7 @@ class InvestProFooter extends StatelessWidget {
           const Divider(color: Colors.grey, thickness: 1, height: 1),
           const SizedBox(height: 32),
 
-          // Important Disclaimer
+          // Important Note
           Container(
             padding: EdgeInsets.all(isMobile ? 16 : 24),
             decoration: BoxDecoration(
@@ -52,7 +52,7 @@ class InvestProFooter extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Important Disclaimer',
+                  'Important Note',
                   style: TextStyle(
                     fontSize: isMobile ? 15 : 16,
                     fontWeight: FontWeight.bold,
@@ -61,7 +61,7 @@ class InvestProFooter extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'All investments involve risk. Past performance does not guarantee future outcomes. The value of investments may go down as well as up, and you may not get back the full amount invested. Please review all terms and conditions before investing and consider seeking independent financial advice.',
+                  'Your success is our priority. Every investment plan is designed with stability, transparency, and consistent growth in mind. We combine smart strategies with expert management to ensure your funds work efficiently for you. Join us and experience secure, steady financial progress.',
                   style: TextStyle(
                     fontSize: isMobile ? 13 : 14,
                     color: const Color(0xFFAAAAAA),
@@ -83,7 +83,7 @@ class InvestProFooter extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      '© 2025 InvestPro Capital. All Rights Reserved.',
+                      '© 2025 Pioneer Capital Limited. All Rights Reserved.',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 12,
@@ -96,7 +96,7 @@ class InvestProFooter extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '© 2025 InvestPro Capital. All Rights Reserved.',
+                      '© 2025 Pioneer Capital Limited. All Rights Reserved.',
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFFAAAAAA),

@@ -4,19 +4,21 @@ import 'package:google_fonts/google_fonts.dart';
 
 Widget firstSide({required BuildContext context}) {
   final screenWidth = MediaQuery.of(context).size.width;
-  final isMobile = screenWidth < 900; // breakpoint for responsiveness
+  final isMobile = screenWidth < 600; // breakpoint for responsiveness
 
-  // --- Mobile layout (Column) ---
+  // --- Mobile layout (Column + Scrollable) ---
   if (isMobile) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildTextSection(context, isMobile),
-          const SizedBox(height: 40),
-          _buildImageSection(isMobile),
-        ],
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildTextSection(context, isMobile),
+            const SizedBox(height: 40),
+            _buildImageSection(isMobile),
+          ],
+        ),
       ),
     );
   }

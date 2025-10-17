@@ -7,7 +7,7 @@ class WhyChooseInvestProPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final bool isMobile = screenWidth < 800;
+    final bool isMobile = screenWidth < 600;
 
     return Container(
       color: Colors.amber.withOpacity(0.1),
@@ -33,6 +33,7 @@ class WhyChooseInvestProPage extends StatelessWidget {
               ),
               Text(
                 'Pioneer Capital Limited',
+                textAlign: TextAlign.center,
                 style: GoogleFonts.playfairDisplay(
                   fontSize: isMobile ? 32 : 48,
                   fontWeight: FontWeight.bold,

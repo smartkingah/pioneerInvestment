@@ -107,12 +107,13 @@ class AmbassadorPage extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(color: Colors.white, fontSize: 15),
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
                 ),
                 Text(
                   subtitle,
                   style: const TextStyle(
                     color: Colors.white,
+                    fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

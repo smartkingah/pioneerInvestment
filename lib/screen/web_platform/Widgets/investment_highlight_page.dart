@@ -13,24 +13,30 @@ class InvestmentHighlightsPage extends StatelessWidget {
         color: Color(0xFF030305),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // HEADER
-            RichText(
-              text: TextSpan(
-                text: 'Performance ',
-                style: GoogleFonts.playfairDisplay(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                children: [
-                  TextSpan(
-                    text: 'Highlights',
-                    style: GoogleFonts.playfairDisplay(
-                      color: Color(0xFFFFC107),
-                    ),
+            Align(
+              alignment: Alignment.center,
+              child: RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  text: 'Performance ',
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
-                ],
+                  children: [
+                    TextSpan(
+                      text: 'Highlights',
+
+                      style: GoogleFonts.playfairDisplay(
+                        color: Color(0xFFFFC107),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 10),
