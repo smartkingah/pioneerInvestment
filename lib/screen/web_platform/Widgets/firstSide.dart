@@ -10,6 +10,7 @@ Widget firstSide({required BuildContext context}) {
   if (isMobile) {
     return SafeArea(
       child: SingleChildScrollView(
+        physics: NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

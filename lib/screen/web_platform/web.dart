@@ -21,7 +21,7 @@ class InvestmentLandingPage extends StatelessWidget {
             child: Column(
               children: [
                 Container(
-                  height: MediaQuery.of(context).size.height / 1,
+                  // height: MediaQuery.of(context).size.height / 1,
                   color: Colors.transparent,
                   child: Stack(
                     children: [
@@ -35,7 +35,7 @@ class InvestmentLandingPage extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        // height: MediaQuery.of(context).size.height / 2,
+                        height: MediaQuery.of(context).size.height / 1,
                         width: double.infinity,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
