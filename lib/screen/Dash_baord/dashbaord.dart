@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:investmentpro/Services/authentication_services.dart';
+import 'package:investmentpro/providers/model_provider.dart';
 import 'package:investmentpro/screen/Auth/auth_screen.dart';
 import 'package:investmentpro/screen/Dash_baord/widgets/dashboard_analytics_metrics.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/services.dart'; // for SystemNavigator.pop()
 import 'package:firebase_auth/firebase_auth.dart';
@@ -142,13 +144,23 @@ class _InvestmentDashboardState extends State<InvestmentDashboard> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundImage:
+                        getStorage.read('photoUrl') != null &&
+                            getStorage.read('photoUrl').toString().isNotEmpty
+                        ? NetworkImage(getStorage.read('photoUrl'))
+                        : null,
                     backgroundColor: Colors.white,
-                    child: Icon(Icons.person, color: Colors.black),
+                    child:
+                        (getStorage.read('photoUrl') == null ||
+                            getStorage.read('photoUrl').toString().isEmpty)
+                        ? const Icon(Icons.person, color: Colors.black)
+                        : null,
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    "John Doe",
+                    getStorage.read('fullname') ?? "John Doe",
                     style: GoogleFonts.poppins(color: Colors.white),
                   ),
                 ],
