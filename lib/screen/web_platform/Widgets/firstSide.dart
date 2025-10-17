@@ -1,6 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:investmentpro/screen/Dash_baord/dashbaord.dart';
+import 'package:investmentpro/screen/authentication/login.dart';
 
 Widget firstSide({required BuildContext context}) {
   final screenWidth = MediaQuery.of(context).size.width;
@@ -96,7 +99,9 @@ Widget _buildTextSection(BuildContext context, bool isMobile) {
         runSpacing: 12,
         children: [
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Get.to(() => LoginPage());
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
               padding: EdgeInsets.symmetric(
@@ -116,8 +121,13 @@ Widget _buildTextSection(BuildContext context, bool isMobile) {
               ),
             ),
           ),
+          // unsigned_preset_v1
+
+          // dy523yrlh
           OutlinedButton(
-            onPressed: () {},
+            onPressed: () {
+              // Get.to(() => InvestmentDashboard());
+            },
             style: OutlinedButton.styleFrom(
               side: const BorderSide(color: Colors.white, width: 1.5),
               padding: EdgeInsets.symmetric(
