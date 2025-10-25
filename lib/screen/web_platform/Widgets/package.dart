@@ -84,7 +84,7 @@ class InvestmentPackagesPage extends StatelessWidget {
                     _buildPackageCard(
                       title: 'Bronze',
                       amount: '\$50 – \$499',
-                      returnRate: '5% every 24 hrs',
+                      returnRate: '10% every 24 hrs',
                       description: 'Ideal for beginners seeking daily growth.',
                       icon: '🥉',
                       iconColor: const Color(0xFFC97F22),
@@ -127,7 +127,7 @@ class InvestmentPackagesPage extends StatelessWidget {
                       isSmallPhone: isSmallPhone,
                     ),
                     _buildPackageCard(
-                      title: 'Californian',
+                      title: 'Californium',
                       amount: '\$100,000 – \$500,000',
                       returnRate: '50% every 30 days',
                       description: 'Long-term, high-value returns.',
@@ -140,7 +140,7 @@ class InvestmentPackagesPage extends StatelessWidget {
                     _buildPackageCard(
                       title: 'Executive',
                       amount: '\$500,000 – \$1,000,000',
-                      returnRate: '60% profit',
+                      returnRate: '70% profit',
                       description: 'For elite or institutional investors.',
                       icon: "👑",
                       iconColor: const Color(0xFFFFD700),
@@ -255,6 +255,8 @@ class InvestmentPackagesPage extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: isPopular
                           ? const Color(0xFFD4A017)
+                          : isElite
+                          ? const Color(0xFF9932CC)
                           : Colors.grey[300],
                       foregroundColor: isPopular ? Colors.white : Colors.black,
                       shape: RoundedRectangleBorder(
@@ -271,6 +273,9 @@ class InvestmentPackagesPage extends StatelessWidget {
                       style: TextStyle(
                         fontSize: isSmallPhone ? 13 : 15,
                         fontWeight: FontWeight.w600,
+                        color:
+                            //  isPopular ||
+                            isElite ? Colors.white : Colors.black,
                       ),
                     ),
                   ),

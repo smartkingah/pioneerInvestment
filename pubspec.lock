@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.0"
+  badges:
+    dependency: "direct main"
+    description:
+      name: badges
+      sha256: a7b6bbd60dce418df0db3058b53f9d083c22cdb5132a052145dc267494df0b84
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -145,6 +153,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  draggable_float_widget:
+    dependency: "direct main"
+    description:
+      name: draggable_float_widget
+      sha256: "075675c56f6b2bfc9f972a3937dc1b59838489a312f75fe7e90ba6844a84dce4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   emailjs:
     dependency: "direct main"
     description:
@@ -600,6 +616,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  pretty_date_time:
+    dependency: "direct main"
+    description:
+      name: pretty_date_time
+      sha256: "78b555b94e97f69e90177711a7fa707eb188bfac1cad0c2dae8f9f4220db44a0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   provider:
     dependency: "direct main"
     description:
@@ -688,6 +712,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
+  shimmer:
+    dependency: "direct main"
+    description:
+      name: shimmer
+      sha256: "5f88c883a22e9f9f299e5ba0e4f7e6054857224976a5d9f839d4ebdc94a14ac9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   sky_engine:
     dependency: transitive
     description: flutter

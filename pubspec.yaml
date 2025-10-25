@@ -56,6 +56,8 @@ dependencies:
   #
   emailjs: ^4.0.0
 
+  badges: ^3.1.2
+
   #
   get_storage: ^2.1.1
   get_time_ago:
@@ -72,6 +74,9 @@ dependencies:
   qr_flutter: ^4.1.0
   syncfusion_flutter_charts: ^31.2.2
   get: ^4.7.2
+  shimmer: ^3.0.0
+  draggable_float_widget: ^0.1.0
+  pretty_date_time: ^0.0.3
 
 dev_dependencies:
   flutter_test:

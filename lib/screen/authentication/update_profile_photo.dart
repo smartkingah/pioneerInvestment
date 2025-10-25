@@ -105,7 +105,11 @@ class _ProfilePhotoPageState extends State<ProfilePhotoPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF111111),
         elevation: 0,
-        title: const Text('Upload Profile Photo'),
+        centerTitle: true,
+        title: const Text(
+          'Upload Profile Photo',
+          style: TextStyle(color: Colors.white),
+        ),
         automaticallyImplyLeading: false,
       ),
       body: Padding(

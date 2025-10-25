@@ -40,8 +40,19 @@ class AuthService {
         'photoUrl': null,
         'createdAt': FieldValue.serverTimestamp(),
         'wallet': '0.0',
-        'package': "none",
         "password": password,
+        'totalEarnings': 0,
+        'package': "none",
+        'activePackage': "none",
+        "investmentAmount": 0,
+        "lastInvestmentDate": null,
+        "withdrawalRequest": [],
+        "maxPackageLimit": 0,
+        "dailyGrowth": 0,
+        "lockedActivation": false,
+        "nextPayoutDate": null,
+        "kickStartFee": 0,
+        "numberOfRounds": 0,
       });
       getStorage.write('fullname', fullname);
       Provider.of<ModelProvider>(
@@ -109,5 +120,393 @@ class AuthService {
       context,
       listen: false,
     ).setuserPhotUrlData(photoUrl: getStorage.read('photoUrl'));
+  }
+
+  ///activateInvestment
+
+  Future<void> activateInvestment(
+    Map<String, dynamic> package,
+    context,
+    clearPackge,
+  ) async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+      final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+
+      final userSnap = await userRef.get();
+      if (!userSnap.exists) return;
+
+      final data = userSnap.data()!;
+      final double wallet =
+          double.tryParse(data['wallet']?.toString() ?? '0') ?? 0.0;
+      final numberOfRounds = data['numberOfRounds'] ?? 0.0;
+
+      final double packageMin =
+          double.tryParse(package['min']?.toString() ?? '0') ?? 0.0;
+      final double packageRoi =
+          double.tryParse(package['roi']?.toString() ?? '0') ?? 0.0;
+      final int duration =
+          int.tryParse(package['durationDays']?.toString() ?? '1') ?? 1;
+
+      // Step 1: Check if wallet has enough funds
+      if (wallet < packageMin) {
+        showWarningSnackBar(
+          context,
+          'Payment Pending',
+          "Insufficient balance for ${package['name']} package",
+        );
+        return;
+      }
+
+      // Step 2: Deduct investment amount (use packageMin for simplicity)
+      final double investAmount = packageMin;
+      final double roi = packageRoi / 100;
+
+      // Step 3: Calculate daily growth
+      final double dailyGrowth = (investAmount * roi) / duration;
+
+      // Step 4: Compute next payout date
+      final DateTime nextPayout = DateTime.now().add(Duration(days: duration));
+
+      // Step 5: Update Firestore
+      await userRef
+          .update({
+            'wallet': wallet - investAmount,
+            'activePackage': package['name'],
+            'maxPackageLimit': package['max'],
+            'investmentAmount': investAmount,
+            'packageRoi ': roi,
+            'lastInvestmentDate': DateTime.now().toIso8601String(),
+            'nextPayoutDate': nextPayout.toIso8601String(),
+            'dailyGrowth': dailyGrowth,
+            "duration": duration,
+            'kickStartFee': package['kickStartFee'],
+            "numberOfRounds": numberOfRounds + 1,
+            'totalEarnings': data['totalEarnings'] ?? 0.0,
+          })
+          .then((v) async {
+            await clearPackge;
+          });
+
+      // Step 6: Record transaction
+      await recordTransaction(
+        type: "Investment",
+        amount: investAmount,
+        status: "Completed",
+      );
+
+      // Step 7: Notify user
+      showSuccessSnackBar(
+        title: "Activation Successful!",
+        subTitle: "${package['name']} package is now active",
+        context: context,
+      );
+    } catch (e) {
+      showErrorSnackBar(
+        context: context,
+        title: "Activation Failed",
+        subTitle: e.toString(),
+      );
+    }
+  }
+
+  Future<void> recordTransaction({
+    required String
+    type, // e.g. "Investment", "Reactivation", "Payout", "Withdrawal"
+    required double amount,
+    required String status, // e.g. "Completed" or "Pending"
+  }) async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+
+    await userRef.collection('transactions').add({
+      'type': type,
+      'amount': amount.toStringAsFixed(2),
+      'status': status,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  }
+
+  // ✅ SUCCESS SNACKBAR - Package Activated
+  void showSuccessSnackBar({
+    required BuildContext context,
+    required String title,
+    required String subTitle,
+  }) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0ECB81).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.check_circle_rounded,
+                  color: Color(0xFF0ECB81),
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subTitle,
+                      style: GoogleFonts.inter(
+                        color: Colors.white70,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0ECB81).withOpacity(0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.rocket_launch_rounded,
+                  color: Color(0xFF0ECB81),
+                  size: 18,
+                ),
+              ),
+            ],
+          ),
+        ),
+        backgroundColor: const Color(0xFF1C1C1E),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Color(0xFF0ECB81), width: 1),
+        ),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 4),
+        elevation: 8,
+      ),
+    );
+  }
+
+  // ❌ ERROR SNACKBAR - Insufficient Balance
+  void showErrorSnackBar({
+    required BuildContext context,
+    required String title,
+    required String subTitle,
+  }) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.redAccent.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.error_rounded,
+                  color: Colors.redAccent,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subTitle,
+                      style: GoogleFonts.inter(
+                        color: Colors.white70,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.redAccent.withOpacity(0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.account_balance_wallet_outlined,
+                  color: Colors.redAccent,
+                  size: 18,
+                ),
+              ),
+            ],
+          ),
+        ),
+        backgroundColor: const Color(0xFF1C1C1E),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Colors.redAccent, width: 1),
+        ),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 4),
+        elevation: 8,
+        action: SnackBarAction(
+          label: 'Fund Now',
+          textColor: const Color(0xFFD4A017),
+          onPressed: () {
+            // Trigger fund wallet dialog
+          },
+        ),
+      ),
+    );
+  }
+
+  // ⚠️ WARNING SNACKBAR (Optional - for pending confirmations)
+  void showWarningSnackBar(BuildContext context, String title, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFB020).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.info_rounded,
+                  color: Color(0xFFFFB020),
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      message,
+                      style: GoogleFonts.inter(
+                        color: Colors.white70,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        backgroundColor: const Color(0xFF1C1C1E),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Color(0xFFFFB020), width: 1),
+        ),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 4),
+        elevation: 8,
+      ),
+    );
+  }
+
+  // 🎯 INFO SNACKBAR (Optional - general info)
+  void showInfoSnackBar(BuildContext context, String title, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD4A017).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.lightbulb_rounded,
+                  color: Color(0xFFD4A017),
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      message,
+                      style: GoogleFonts.inter(
+                        color: Colors.white70,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        backgroundColor: const Color(0xFF1C1C1E),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Color(0xFFD4A017), width: 1),
+        ),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 3),
+        elevation: 8,
+      ),
+    );
   }
 }
