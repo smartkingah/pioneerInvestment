@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:investmentpro/Services/authentication_services.dart';
 import 'package:investmentpro/Services/cloudinary_services.dart';
+import 'package:investmentpro/screen/Auth/auth_screen.dart';
 import 'package:investmentpro/screen/Dash_baord/dashbaord.dart';
 
 class ProfilePhotoPage extends StatefulWidget {
@@ -76,7 +77,7 @@ class _ProfilePhotoPageState extends State<ProfilePhotoPage> {
 
       // Wait a moment before navigating
       await Future.delayed(const Duration(seconds: 1));
-      Get.off(() => const InvestmentDashboard());
+      Get.off(() => const AuthState());
     } else {
       Get.snackbar(
         'Upload Error',

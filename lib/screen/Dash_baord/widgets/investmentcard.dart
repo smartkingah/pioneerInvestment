@@ -77,7 +77,7 @@ class _ActiveInvestmentCardState extends State<ActiveInvestmentCard> {
         });
       } else {
         _timer?.cancel();
-        await _triggerPayout(); // ✅ Automatically trigger payout
+
         setState(() {
           _remainingTime = Duration.zero;
         });
@@ -108,7 +108,7 @@ class _ActiveInvestmentCardState extends State<ActiveInvestmentCard> {
       final newWallet = wallet + profit;
 
       await userRef.update({
-        'wallet': newWallet.toStringAsFixed(2),
+        'wallet': newWallet,
         'totalEarnings': data['totalEarnings'] + profit,
 
         // 'lastInvestmentDate': DateTime.now().toIso8601String(),
@@ -276,9 +276,10 @@ class _ActiveInvestmentCardState extends State<ActiveInvestmentCard> {
                         ///2. if its locked and its not BRONZE pay kickstart Capital
                         ///3.
 
-                        _reactivatePackage().then((value) {
+                        _reactivatePackage().then((value) async {
                           // Refresh UI
                           _fetchActivePackage();
+                          await _triggerPayout(); // ✅ Automatically trigger payout
                           AuthService().showSuccessSnackBar(
                             context: context,
                             title: "✅ Package reactivated successfully.",

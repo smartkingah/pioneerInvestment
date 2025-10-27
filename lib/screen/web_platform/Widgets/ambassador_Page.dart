@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:investmentpro/screen/Auth/auth_screen.dart';
+import 'package:investmentpro/screen/authentication/signup.dart';
 
 class AmbassadorPage extends StatelessWidget {
   const AmbassadorPage({super.key});
@@ -162,33 +165,32 @@ class AmbassadorPage extends StatelessWidget {
             "Enter referral code if you have one",
           ),
 
-          const SizedBox(height: 12),
-          const Text(
-            "Interested In",
-            style: TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
-            decoration: InputDecoration(
-              hintText: "Select your interest",
-              filled: true,
-              fillColor: const Color(0xFFF9F9F9),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none,
-              ),
-            ),
-            items: const [
-              DropdownMenuItem(value: "Investment", child: Text("Investment")),
-              DropdownMenuItem(
-                value: "Partnership",
-                child: Text("Partnership"),
-              ),
-              DropdownMenuItem(value: "Marketing", child: Text("Marketing")),
-            ],
-            onChanged: (value) {},
-          ),
-
+          // const SizedBox(height: 12),
+          // const Text(
+          //   "Interested In",
+          //   style: TextStyle(fontWeight: FontWeight.w600),
+          // ),
+          // const SizedBox(height: 8),
+          // DropdownButtonFormField<String>(
+          //   decoration: InputDecoration(
+          //     hintText: "Select your interest",
+          //     filled: true,
+          //     fillColor: const Color(0xFFF9F9F9),
+          //     border: OutlineInputBorder(
+          //       borderRadius: BorderRadius.circular(8),
+          //       borderSide: BorderSide.none,
+          //     ),
+          //   ),
+          //   items: const [
+          //     DropdownMenuItem(value: "Investment", child: Text("Investment")),
+          //     DropdownMenuItem(
+          //       value: "Partnership",
+          //       child: Text("Partnership"),
+          //     ),
+          //     DropdownMenuItem(value: "Marketing", child: Text("Marketing")),
+          //   ],
+          //   onChanged: (value) {},
+          // ),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
@@ -200,7 +202,9 @@ class AmbassadorPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Get.to(() => SignupPage());
+              },
               child: const Text(
                 "Become an Ambassador",
                 style: TextStyle(fontSize: 16, color: Colors.white),

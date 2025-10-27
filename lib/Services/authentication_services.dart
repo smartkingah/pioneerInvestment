@@ -39,7 +39,7 @@ class AuthService {
         'address': address,
         'photoUrl': null,
         'createdAt': FieldValue.serverTimestamp(),
-        'wallet': '0.0',
+        'wallet': 0.0,
         "password": password,
         'totalEarnings': 0,
         'package': "none",
@@ -179,9 +179,9 @@ class AuthService {
             'lastInvestmentDate': DateTime.now().toIso8601String(),
             'nextPayoutDate': nextPayout.toIso8601String(),
             'dailyGrowth': dailyGrowth,
+            "numberOfRounds": numberOfRounds + 1,
             "duration": duration,
             'kickStartFee': package['kickStartFee'],
-            "numberOfRounds": numberOfRounds + 1,
             'totalEarnings': data['totalEarnings'] ?? 0.0,
           })
           .then((v) async {
@@ -377,13 +377,13 @@ class AuthService {
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 4),
         elevation: 8,
-        action: SnackBarAction(
-          label: 'Fund Now',
-          textColor: const Color(0xFFD4A017),
-          onPressed: () {
-            // Trigger fund wallet dialog
-          },
-        ),
+        // action: SnackBarAction(
+        //   label: 'Fund Now',
+        //   textColor: const Color(0xFFD4A017),
+        //   onPressed: () {
+        //     // Trigger fund wallet dialog
+        //   },
+        // ),
       ),
     );
   }

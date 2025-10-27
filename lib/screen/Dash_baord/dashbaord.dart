@@ -15,6 +15,7 @@ import 'package:investmentpro/screen/Dash_baord/widgets/investmentcard.dart';
 import 'package:investmentpro/screen/Dash_baord/widgets/select_usdt_address.dart';
 import 'package:investmentpro/screen/Dash_baord/widgets/transaction.dart';
 import 'package:investmentpro/screen/Dash_baord/withdrawal_screen/withdrawal.dart';
+import 'package:investmentpro/screen/admin_/admin_button.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -29,7 +30,8 @@ class InvestmentDashboard extends StatefulWidget {
   State<InvestmentDashboard> createState() => _InvestmentDashboardState();
 }
 
-class _InvestmentDashboardState extends State<InvestmentDashboard> {
+class _InvestmentDashboardState extends State<InvestmentDashboard>
+    with WidgetsBindingObserver {
   bool _showPackages = false;
   String usdtWalletAddress = '';
   String ethwalletAddress = '';
@@ -132,6 +134,15 @@ class _InvestmentDashboardState extends State<InvestmentDashboard> {
     },
   ];
 
+  ///SETTING STATUS (ONLINE/OFFLINE)
+  void setStatus(String status) async {
+    if (!mounted) return;
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({'status': status, 'lastSeen': DateTime.now()});
+  }
+
   Future<bool> _onWillPop() async {
     bool? exitApp = await showDialog(
       context: context,
@@ -170,10 +181,24 @@ class _InvestmentDashboardState extends State<InvestmentDashboard> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchPendingPackage();
       fetchUserData();
+      setStatus("online");
     });
 
     // _fetchPendingPackage();
     super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // TODO: implement didChangeAppLifecycleState
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      //online
+      setStatus('online');
+    } else {
+      //offline
+      setStatus("offline");
+    }
   }
 
   ///fetch userData
@@ -301,17 +326,25 @@ class _InvestmentDashboardState extends State<InvestmentDashboard> {
       onWillPop: _onWillPop,
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-        floatingActionButton: FloatingActionButton.small(
-          backgroundColor: const Color(0xFF2C2C2E),
-          elevation: 2,
-          onPressed: () {
-            showLogoutDialog();
-          },
-          child: const Icon(
-            Icons.logout_outlined,
-            color: Colors.redAccent,
-            size: 20,
-          ),
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AdminButton(),
+            const SizedBox(height: 12),
+            FloatingActionButton.small(
+              backgroundColor: const Color(0xFF2C2C2E),
+              elevation: 2,
+              onPressed: () {
+                showLogoutDialog();
+              },
+              child: const Icon(
+                Icons.logout_outlined,
+                color: Colors.redAccent,
+                size: 20,
+              ),
+            ),
+          ],
         ),
         backgroundColor: const Color(0xFF000000),
         appBar: dashBoardAppBar(context: context),

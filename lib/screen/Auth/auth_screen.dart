@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:investmentpro/screen/Dash_baord/dashbaord.dart';
+import 'package:investmentpro/screen/admin_/suspendUseraccoundt.dart';
 import 'package:investmentpro/screen/web_platform/web.dart';
 
 class AuthState extends StatefulWidget {
@@ -40,7 +41,10 @@ class _AuthStateState extends State<AuthState> {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return InvestmentDashboard();
+          // return InvestmentDashboard();
+          return SuspendedAccountWrapper(
+            dashboardScreen: const InvestmentDashboard(),
+          );
         } else {
           print('log in is false ------------------');
           return const InvestmentLandingPage();

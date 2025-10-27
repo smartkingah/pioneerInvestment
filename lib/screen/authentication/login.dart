@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:investmentpro/Services/authentication_services.dart';
+import 'package:investmentpro/screen/Auth/auth_screen.dart';
 import 'package:investmentpro/screen/Dash_baord/dashbaord.dart';
 import 'package:investmentpro/screen/authentication/forgot_password.dart';
 import 'package:investmentpro/screen/authentication/signup.dart';
@@ -60,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
         context,
         MaterialPageRoute(
           builder: (context) {
-            return InvestmentDashboard();
+            return AuthState();
           },
         ),
       );

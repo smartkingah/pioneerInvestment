@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:investmentpro/screen/authentication/signup.dart';
 
 class InvestmentPackagesPage extends StatelessWidget {
   const InvestmentPackagesPage({super.key});
@@ -251,7 +253,10 @@ class InvestmentPackagesPage extends StatelessWidget {
                 SizedBox(
                   width: isSmallPhone ? 140 : 180,
                   child: ElevatedButton(
-                    onPressed: () => debugPrint('Selected: $title'),
+                    onPressed: () {
+                      Get.to(() => SignupPage());
+                      debugPrint('Selected: $title');
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: isPopular
                           ? const Color(0xFFD4A017)
