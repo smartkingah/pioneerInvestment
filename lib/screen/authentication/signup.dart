@@ -107,6 +107,8 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isMobile = MediaQuery.of(context).size.width < 600;
+    final double screenWidth = MediaQuery.of(context).size.width;
     final yellow = const Color(0xFFFFD400);
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
@@ -123,121 +125,129 @@ class _SignupPageState extends State<SignupPage> {
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: CachedNetworkImage(
-                fit: BoxFit.cover,
-                imageUrl:
-                    'https://res.cloudinary.com/dy523yrlh/image/upload/v1761692169/PCL_LOGO_tjuaw6.png',
-                // width: double.infinity,
-                // height: double.infinity,
-                width: 120,
-                height: 120,
-              ),
-            ),
-            // Icon(Icons.layers, color: yellow, size: 60),
-            const SizedBox(height: 16),
-            const Text(
-              'Create Account',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'Join our investment platform',
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 22),
-
-            // input fields
-            _buildField('Full Name', _fullname, hint: 'Enter your full name'),
-            const SizedBox(height: 12),
-            _buildField(
-              'Email',
-              _email,
-              hint: 'you@example.com',
-              keyboard: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 12),
-            _buildField(
-              'Phone Number',
-              _phone,
-              hint: '+1 3332...',
-              keyboard: TextInputType.phone,
-            ),
-            const SizedBox(height: 12),
-            _buildField('Country', _country, hint: 'United States'),
-            const SizedBox(height: 12),
-            _buildField('Address', _address, hint: 'Street / City'),
-            const SizedBox(height: 12),
-
-            // password
-            _buildField(
-              'Password',
-              _password,
-              hint: 'Enter your password',
-              obscure: _obscurePass,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscurePass ? Icons.visibility_off : Icons.visibility,
-                  color: Colors.grey,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile
+                ? 16
+                : (screenWidth > 1200 ? screenWidth * 0.2 : 32),
+            vertical: 20,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: CachedNetworkImage(
+                  fit: BoxFit.cover,
+                  imageUrl:
+                      'https://res.cloudinary.com/dy523yrlh/image/upload/v1761692169/PCL_LOGO_tjuaw6.png',
+                  // width: double.infinity,
+                  // height: double.infinity,
+                  width: 120,
+                  height: 120,
                 ),
-                onPressed: () => setState(() => _obscurePass = !_obscurePass),
               ),
-            ),
-            const SizedBox(height: 12),
-            _buildField(
-              'Confirm Password',
-              _confirm,
-              hint: 'Re-enter your password',
-              obscure: _obscureConfirm,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscureConfirm ? Icons.visibility_off : Icons.visibility,
-                  color: Colors.grey,
+              // Icon(Icons.layers, color: yellow, size: 60),
+              const SizedBox(height: 16),
+              const Text(
+                'Create Account',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
-                onPressed: () =>
-                    setState(() => _obscureConfirm = !_obscureConfirm),
               ),
-            ),
-            const SizedBox(height: 12),
-            _buildField('Referred By', _referredBy, hint: '0000 (OPTIONAL)'),
-            const SizedBox(height: 22),
+              const SizedBox(height: 6),
+              const Text(
+                'Join our investment platform',
+                style: TextStyle(color: Colors.grey),
+              ),
+              const SizedBox(height: 22),
 
-            LongButton(
-              title: _loading ? 'Creating Account...' : 'Sign Up',
-              onTap: _loading ? null : _signup,
-              textColor: _loading ? Colors.white : Colors.black,
-            ),
+              // input fields
+              _buildField('Full Name', _fullname, hint: 'Enter your full name'),
+              const SizedBox(height: 12),
+              _buildField(
+                'Email',
+                _email,
+                hint: 'you@example.com',
+                keyboard: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 12),
+              _buildField(
+                'Phone Number',
+                _phone,
+                hint: '+1 3332...',
+                keyboard: TextInputType.phone,
+              ),
+              const SizedBox(height: 12),
+              _buildField('Country', _country, hint: 'United States'),
+              const SizedBox(height: 12),
+              _buildField('Address', _address, hint: 'Street / City'),
+              const SizedBox(height: 12),
 
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Already have an account? ',
-                  style: TextStyle(color: Colors.grey),
+              // password
+              _buildField(
+                'Password',
+                _password,
+                hint: 'Enter your password',
+                obscure: _obscurePass,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePass ? Icons.visibility_off : Icons.visibility,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () => setState(() => _obscurePass = !_obscurePass),
                 ),
-                GestureDetector(
-                  onTap: () => Get.to(() => const LoginPage()),
-                  child: Text(
-                    'Login',
-                    style: TextStyle(
-                      color: yellow,
-                      fontWeight: FontWeight.w600,
+              ),
+              const SizedBox(height: 12),
+              _buildField(
+                'Confirm Password',
+                _confirm,
+                hint: 'Re-enter your password',
+                obscure: _obscureConfirm,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureConfirm ? Icons.visibility_off : Icons.visibility,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscureConfirm = !_obscureConfirm),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildField('Referred By', _referredBy, hint: '0000 (OPTIONAL)'),
+              const SizedBox(height: 22),
+
+              LongButton(
+                title: _loading ? 'Creating Account...' : 'Sign Up',
+                onTap: _loading ? null : _signup,
+                textColor: _loading ? Colors.white : Colors.black,
+              ),
+
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Already have an account? ',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  GestureDetector(
+                    onTap: () => Get.to(() => const LoginPage()),
+                    child: Text(
+                      'Login',
+                      style: TextStyle(
+                        color: yellow,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-          ],
+                ],
+              ),
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
     );

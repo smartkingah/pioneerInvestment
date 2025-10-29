@@ -1011,7 +1011,9 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
               ? SizedBox()
               : (activePackageData == 'Californium' && data['wallet'] >= 500000)
               ? SizedBox()
-              : (activePackageData == 'Bronze' && data['wallet'] == 0)
+              : (activePackageData == 'Bronze' &&
+                    data['wallet'] == 0 &&
+                    numberOfRoundsData < 1)
               ? SizedBox()
               : data['lockedActivation'] == false
               ? ActiveInvestmentCard()

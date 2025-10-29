@@ -15,8 +15,20 @@ AuthService authService = AuthService();
 class AuthService {
   static final _auth = FirebaseAuth.instance;
   static final _fs = FirebaseFirestore.instance;
-  static String generateReferralCode(String uid) {
-    return uid.substring(0, 4).toUpperCase();
+  // Generate a 7-character, space-free referral code
+  static String generateReferralCode(String uid, String fullname) {
+    // Remove spaces from fullname and take the first 3 letters (uppercase)
+    String namePart = fullname.replaceAll(' ', '').toUpperCase();
+    namePart = namePart.length >= 3 ? namePart.substring(0, 3) : namePart;
+
+    // Take 4 random characters from the uid
+    String uidPart = uid.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '').toUpperCase();
+    uidPart = uidPart.length >= 4
+        ? uidPart.substring(0, 4)
+        : uidPart.padRight(4, 'X');
+
+    // Combine both to form a 7-character code
+    return (namePart + uidPart).substring(0, 7);
   }
 
   // Signup
@@ -38,7 +50,7 @@ class AuthService {
 
     if (user != null) {
       // Generate the user’s own referral code
-      String myReferralCode = generateReferralCode(user.uid);
+      String myReferralCode = generateReferralCode(user.uid, fullname);
 
       // Create user document
       await _fs.collection('users').doc(user.uid).set({
@@ -65,7 +77,7 @@ class AuthService {
         'numberOfRounds': 0,
 
         // 👇 Added fields
-        'referralCode': myReferralCode + fullname, // their own code
+        'referralCode': myReferralCode, // their own code
         'referredBy': referredBy.isNotEmpty
             ? referredBy
             : '', // who referred them
