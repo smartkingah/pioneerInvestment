@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,24 +35,36 @@ class CustomAppBar extends StatelessWidget {
           ),
           const SizedBox(width: 16),
 
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFFD4A017).withOpacity(0.3),
-                  const Color(0xFFD4A017).withOpacity(0.1),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              CupertinoIcons.person_2_fill,
-              color: Color(0xFFD4A017),
-              size: 24,
+          // Container(
+          //   width: 48,
+          //   height: 48,
+          //   decoration: BoxDecoration(
+          //     gradient: LinearGradient(
+          //       begin: Alignment.topLeft,
+          //       end: Alignment.bottomRight,
+          //       colors: [
+          //         const Color(0xFFD4A017).withOpacity(0.3),
+          //         const Color(0xFFD4A017).withOpacity(0.1),
+          //       ],
+          //     ),
+          //     borderRadius: BorderRadius.circular(12),
+          //   ),
+          //   child: const Icon(
+          //     CupertinoIcons.person_2_fill,
+          //     color: Color(0xFFD4A017),
+          //     size: 24,
+          //   ),
+          // ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: CachedNetworkImage(
+              fit: BoxFit.cover,
+              imageUrl:
+                  'https://res.cloudinary.com/dy523yrlh/image/upload/v1761692169/PCL_LOGO_tjuaw6.png',
+              // width: double.infinity,
+              // height: double.infinity,
+              width: 60,
+              height: 60,
             ),
           ),
           const SizedBox(width: 12),

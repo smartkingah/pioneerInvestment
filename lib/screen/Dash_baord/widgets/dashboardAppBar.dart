@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:investmentpro/Services/authentication_services.dart';
@@ -8,6 +9,18 @@ AppBar dashBoardAppBar({context}) {
     automaticallyImplyLeading: false,
     backgroundColor: const Color(0xFF0A0A0A),
     elevation: 0,
+    leading: ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: CachedNetworkImage(
+        fit: BoxFit.cover,
+        imageUrl:
+            'https://res.cloudinary.com/dy523yrlh/image/upload/v1761692169/PCL_LOGO_tjuaw6.png',
+        // width: double.infinity,
+        // height: double.infinity,
+        width: 60,
+        height: 60,
+      ),
+    ),
     title: Text(
       'Pioneer Capital Limited',
       overflow: TextOverflow.ellipsis,
@@ -19,7 +32,7 @@ AppBar dashBoardAppBar({context}) {
     ),
     actions: [
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
         child: GestureDetector(
           onTap: () {
             Navigator.push(

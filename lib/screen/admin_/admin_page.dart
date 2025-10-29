@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:investmentpro/screen/admin_/custom_app_bar.dart';
+import 'package:investmentpro/screen/admin_/referal_tab.dart';
 import 'package:investmentpro/screen/admin_/user_detail_admin_page.dart';
 
 class AdminUserManagementScreen extends StatefulWidget {
@@ -15,13 +16,22 @@ class AdminUserManagementScreen extends StatefulWidget {
       _AdminUserManagementScreenState();
 }
 
-class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
+class _AdminUserManagementScreenState extends State<AdminUserManagementScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -82,14 +92,21 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
                       color: Colors.white38,
                       size: 20,
                     ),
-                    suffixIcon: IconButton(
-                      icon: const Icon(
-                        CupertinoIcons.slider_horizontal_3,
-                        color: Colors.white38,
-                        size: 20,
-                      ),
-                      onPressed: () {},
-                    ),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(
+                              CupertinoIcons.clear_circled_solid,
+                              color: Colors.white38,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _searchController.clear();
+                                _searchQuery = '';
+                              });
+                            },
+                          )
+                        : null,
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -100,97 +117,57 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
               ),
             ),
 
-            // User List
+            // Tabs
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1A1A1A),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.1),
+                  width: 1.5,
+                ),
+              ),
+              child: TabBar(
+                controller: _tabController,
+                indicator: BoxDecoration(
+                  color: const Color(0xFFD4A017),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                indicatorSize: TabBarIndicatorSize.tab,
+                dividerColor: Colors.transparent,
+                labelColor: Colors.black,
+                unselectedLabelColor: Colors.white60,
+                labelStyle: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+                unselectedLabelStyle: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+                tabs: const [
+                  Tab(text: 'All Users'),
+                  Tab(text: 'Pending Deposits'),
+                  Tab(text: 'Pending Withdrawals'),
+                  Tab(text: 'Referals'),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Tab Views
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .orderBy('fullname', descending: false)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD4A017).withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Center(
-                          child: SizedBox(
-                            width: 32,
-                            height: 32,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 3,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Color(0xFFD4A017),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.05),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              CupertinoIcons.person_2,
-                              size: 48,
-                              color: Colors.white38,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No users found',
-                            style: GoogleFonts.inter(
-                              color: Colors.white70,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  var users = snapshot.data!.docs;
-
-                  if (_searchQuery.isNotEmpty) {
-                    users = users.where((doc) {
-                      final data = doc.data() as Map<String, dynamic>;
-                      final name = (data['fullname'] ?? '')
-                          .toString()
-                          .toLowerCase();
-                      final email = (data['email'] ?? '')
-                          .toString()
-                          .toLowerCase();
-                      return name.contains(_searchQuery) ||
-                          email.contains(_searchQuery);
-                    }).toList();
-                  }
-
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: users.length,
-                    itemBuilder: (context, index) {
-                      String userId = users[index].id;
-                      final userData =
-                          users[index].data() as Map<String, dynamic>;
-                      return _buildUserCard(userData, userId);
-                    },
-                  );
-                },
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildAllUsersTab(),
+                  _buildPendingPackagesTab(),
+                  _buildWithdrawalRequestsTab(),
+                  ReferralTreeTab(),
+                ],
               ),
             ),
           ],
@@ -199,7 +176,214 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
     );
   }
 
-  Widget _buildUserCard(Map<String, dynamic> user, userId) {
+  Widget _buildAllUsersTab() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .orderBy('fullname', descending: false)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildLoadingIndicator();
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return _buildEmptyState(
+            icon: CupertinoIcons.person_2,
+            message: 'No users found',
+          );
+        }
+
+        var users = snapshot.data!.docs;
+
+        if (_searchQuery.isNotEmpty) {
+          users = users.where((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            final name = (data['fullname'] ?? '').toString().toLowerCase();
+            final email = (data['email'] ?? '').toString().toLowerCase();
+            return name.contains(_searchQuery) || email.contains(_searchQuery);
+          }).toList();
+        }
+
+        if (users.isEmpty) {
+          return _buildEmptyState(
+            icon: CupertinoIcons.search,
+            message: 'No users match your search',
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: users.length,
+          itemBuilder: (context, index) {
+            String userId = users[index].id;
+            final userData = users[index].data() as Map<String, dynamic>;
+            return _buildUserCard(userData, userId);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildPendingPackagesTab() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .where('pendingPackage', isNull: false)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildLoadingIndicator();
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return _buildEmptyState(
+            icon: CupertinoIcons.hourglass,
+            message: 'No pending packages',
+          );
+        }
+
+        var users = snapshot.data!.docs;
+
+        if (_searchQuery.isNotEmpty) {
+          users = users.where((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            final name = (data['fullname'] ?? '').toString().toLowerCase();
+            final email = (data['email'] ?? '').toString().toLowerCase();
+            return name.contains(_searchQuery) || email.contains(_searchQuery);
+          }).toList();
+        }
+
+        if (users.isEmpty) {
+          return _buildEmptyState(
+            icon: CupertinoIcons.search,
+            message: 'No users match your search',
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: users.length,
+          itemBuilder: (context, index) {
+            String userId = users[index].id;
+            final userData = users[index].data() as Map<String, dynamic>;
+            return _buildUserCard(userData, userId, highlightPending: true);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildWithdrawalRequestsTab() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('users').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildLoadingIndicator();
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return _buildEmptyState(
+            icon: CupertinoIcons.arrow_up_circle,
+            message: 'No withdrawal requests',
+          );
+        }
+
+        var users = snapshot.data!.docs.where((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          final withdrawalRequests = data['withdrawalRequest'] as List?;
+          return withdrawalRequests != null && withdrawalRequests.isNotEmpty;
+        }).toList();
+
+        if (_searchQuery.isNotEmpty) {
+          users = users.where((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            final name = (data['fullname'] ?? '').toString().toLowerCase();
+            final email = (data['email'] ?? '').toString().toLowerCase();
+            return name.contains(_searchQuery) || email.contains(_searchQuery);
+          }).toList();
+        }
+
+        if (users.isEmpty) {
+          return _buildEmptyState(
+            icon: _searchQuery.isNotEmpty
+                ? CupertinoIcons.search
+                : CupertinoIcons.arrow_up_circle,
+            message: _searchQuery.isNotEmpty
+                ? 'No users match your search'
+                : 'No withdrawal requests',
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: users.length,
+          itemBuilder: (context, index) {
+            String userId = users[index].id;
+            final userData = users[index].data() as Map<String, dynamic>;
+            return _buildUserCard(userData, userId, highlightWithdrawal: true);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          color: const Color(0xFFD4A017).withOpacity(0.1),
+          shape: BoxShape.circle,
+        ),
+        child: const Center(
+          child: SizedBox(
+            width: 32,
+            height: 32,
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFD4A017)),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState({required IconData icon, required String message}) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 48, color: Colors.white38),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: GoogleFonts.inter(
+              color: Colors.white70,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserCard(
+    Map<String, dynamic> user,
+    userId, {
+    bool highlightPending = false,
+    bool highlightWithdrawal = false,
+  }) {
     final name = user['fullname'] ?? 'Unnamed User';
     final email = user['email'] ?? 'No Email';
     final wallet = user['wallet'] ?? 0.0;
@@ -231,7 +415,7 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
           Get.to(() => UserDetailAdminPage(userData: user, userId: userId)),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
         decoration: BoxDecoration(
           color: const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(20),
@@ -504,19 +688,11 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
             Container(height: 1, color: Colors.white.withOpacity(0.1)),
             const SizedBox(height: 20),
 
-            // Wallet Info
-            _buildInfoTile(
-              icon: CupertinoIcons.money_dollar_circle_fill,
-              label: 'Wallet Balance',
-              value: '\$${formatter.format(wallet)}',
-              valueColor: const Color(0xFFD4A017),
-            ),
-
             // Pending Package Alert
             if (pendingPackage != null) ...[
-              const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(14),
+                margin: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
@@ -575,8 +751,8 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
             // Withdrawal Request Alert
             if (withdrawalRequests != null &&
                 withdrawalRequests.isNotEmpty) ...[
-              const SizedBox(height: 12),
               Container(
+                margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -632,108 +808,8 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
                 ),
               ),
             ],
-
-            // Next Payout
-            if (nextPayoutDate != null) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0ECB81).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: const Color(0xFF0ECB81).withOpacity(0.3),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      CupertinoIcons.calendar_today,
-                      size: 16,
-                      color: Color(0xFF0ECB81),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Next Payout',
-                            style: GoogleFonts.inter(
-                              color: Colors.white54,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            DateFormat(
-                              'MMM d, y • h:mm a',
-                            ).format(nextPayoutDate),
-                            style: GoogleFonts.inter(
-                              color: const Color(0xFF0ECB81),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildInfoTile({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color valueColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: valueColor),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: GoogleFonts.inter(
-                    color: Colors.white54,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: GoogleFonts.inter(
-                    color: valueColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.3,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

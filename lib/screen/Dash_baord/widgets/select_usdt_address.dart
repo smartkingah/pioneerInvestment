@@ -4,12 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:investmentpro/Services/authentication_services.dart';
+import 'package:investmentpro/Services/email_service.dart';
 
 // STEP 1: Show Amount Input Dialog
 void showAmountInputDialog(
   BuildContext context,
   String usdtWalletAddress,
   Map<String, dynamic> selectedPackage,
+  dynamic? data,
 ) {
   final TextEditingController amountController = TextEditingController();
   final formKey = GlobalKey<FormState>();
@@ -76,7 +78,12 @@ void showAmountInputDialog(
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        "${selectedPackage['name']} Package",
+                        (data!['activePackage'] == "Bronze" &&
+                                data['numberOfRounds'] >= 6)
+                            ? "${selectedPackage['name']} Package"
+                            : data!['activePackage'] == "Bronze"
+                            ? "Bronze Package"
+                            : "${selectedPackage['name']} Package",
                         style: GoogleFonts.inter(
                           color: const Color(0xFFD4A017),
                           fontSize: 14,
@@ -90,7 +97,12 @@ void showAmountInputDialog(
 
                 // Range Display
                 Text(
-                  "Range: \$${selectedPackage['min']} - \$${selectedPackage['max']}",
+                  (data!['activePackage'] == "Bronze" &&
+                          data['numberOfRounds'] >= 6)
+                      ? "Range: \$${selectedPackage['min']} - \$${selectedPackage['max']}"
+                      : data!['activePackage'] == "Bronze"
+                      ? "Range: \$50 - \$499"
+                      : "Range: \$${selectedPackage['min']} - \$${selectedPackage['max']}",
                   textAlign: TextAlign.center,
                   style: GoogleFonts.inter(color: Colors.white60, fontSize: 13),
                 ),
@@ -148,7 +160,9 @@ void showAmountInputDialog(
                     if (amount == null) {
                       return 'Please enter a valid number';
                     }
-                    if (amount < selectedPackage['min']) {
+                    if (data!['activePackage'] == "Bronze") {
+                      return null;
+                    } else if (amount < selectedPackage['min']) {
                       return 'Minimum amount is \$${selectedPackage['min']}';
                     }
                     // if (amount > selectedPackage['max']) {
@@ -383,14 +397,44 @@ void showFundWalletDialog(
                   elevation: 0,
                 ),
                 onPressed: () async {
-                  Navigator.pop(context);
-
                   // Record transaction in Firestore
                   await _recordTransaction(
                     context,
                     amount,
                     selectedPackage['name'],
                   );
+
+                  if (selectedPackage['name'] == "Bronze") {
+                    sendEmail().sendMail(
+                      message:
+                          "Admin Notification:\n"
+                          "A new payment has been made/sent successfully.\n"
+                          "👤 User:  ${getStorage.read('fullname')}\n"
+                          "📧 Email:  ${FirebaseAuth.instance.currentUser!.email}\n"
+                          "💰 Amount:  \$$amount\n"
+                          "🏦 Package:  ${selectedPackage['name']}\n"
+                          "💰 Price Range:  \$${selectedPackage['min']} - \$${selectedPackage['max']}\n"
+                          "🕒 Time:  ${DateTime.now()}\n"
+                          "Please verify in your admin dashboard and ensure proper record updates.",
+                    );
+                  } else {
+                    ////send mail to confirm payment
+                    sendEmail().sendMail(
+                      message:
+                          "Admin Notification:\n"
+                          "A new payment has been made/sent successfully.\n"
+                          "👤 User:  ${getStorage.read('fullname')}\n"
+                          "📧 Email:  ${FirebaseAuth.instance.currentUser!.email}\n"
+                          "💰 Amount:  \$$amount\n"
+                          "💵 kick Start Fee:  \$${selectedPackage['kickStartFee']}\n"
+                          "🏦 Package:  ${selectedPackage['name']}\n"
+                          "💰 Price Range:  \$${selectedPackage['min']} - \$${selectedPackage['max']}\n"
+                          "🕒 Time:  ${DateTime.now()}\n"
+                          "Please verify in your admin dashboard and ensure proper record updates.",
+                    );
+                  }
+
+                  Navigator.pop(context);
                 },
                 icon: const Icon(Icons.check_circle_outline, size: 20),
                 label: Text(

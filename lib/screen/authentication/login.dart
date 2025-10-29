@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -95,9 +96,17 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               const SizedBox(height: 30),
               // top logo
-              Container(
-                margin: const EdgeInsets.only(bottom: 18),
-                child: Icon(Icons.layers, size: 64, color: yellow),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: CachedNetworkImage(
+                  fit: BoxFit.cover,
+                  imageUrl:
+                      'https://res.cloudinary.com/dy523yrlh/image/upload/v1761692169/PCL_LOGO_tjuaw6.png',
+                  // width: double.infinity,
+                  // height: double.infinity,
+                  width: 130,
+                  height: 130,
+                ),
               ),
               const Text(
                 'Welcome Back',

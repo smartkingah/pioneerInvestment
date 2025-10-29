@@ -65,7 +65,7 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
       'min': 100000,
       'max': 499999,
       'roi': 50,
-      'durationDays': 30,
+      'durationDays': 10,
       "kickStartFee": 10000,
     },
     {
@@ -73,7 +73,7 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
       'min': 500000,
       'max': 1000000,
       'roi': 70,
-      'durationDays': 90,
+      'durationDays': 60,
       "kickStartFee": 50000,
     },
   ];
@@ -337,6 +337,7 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
                 'activePackage': package['name'],
                 'nextPayoutDate': nextPayout.toIso8601String(),
                 'dailyGrowth': dailyGrowth,
+                "investmentAmount": investAmount,
               });
 
           setState(() {
@@ -484,6 +485,9 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
     final kickStartFeeController = TextEditingController(
       text: (widget.userData['kickStartFee'] ?? 0).toString(),
     );
+    final numberOfRoundsController = TextEditingController(
+      text: (widget.userData['numberOfRounds'] ?? 0).toString(),
+    );
 
     DateTime? selectedJoinedDate = widget.userData['createdAt'] != null
         ? (widget.userData['createdAt'] is Timestamp
@@ -594,6 +598,13 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
                     _buildEditField(
                       'Kickstart Fee',
                       kickStartFeeController,
+                      CupertinoIcons.flame,
+                      isNumber: true,
+                    ),
+                    const SizedBox(height: 14),
+                    _buildEditField(
+                      'Number of Rounds',
+                      numberOfRoundsController,
                       CupertinoIcons.flame,
                       isNumber: true,
                     ),
@@ -795,6 +806,7 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
                                 totalEarningsController.text,
                                 investmentAmountController.text,
                                 kickStartFeeController.text,
+                                numberOfRoundsController.text,
                                 selectedJoinedDate,
                                 selectedNextPayoutDate,
                               );
@@ -868,6 +880,7 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
     String totalEarnings,
     String investmentAmount,
     String kickStartFee,
+    String numberOfRounds,
     DateTime? joinedDate,
     DateTime? nextPayoutDate,
   ) async {
@@ -887,6 +900,7 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
             'totalEarnings': double.tryParse(totalEarnings) ?? 0,
             'investmentAmount': double.tryParse(investmentAmount) ?? 0,
             'kickStartFee': double.tryParse(kickStartFee) ?? 0,
+            'numberOfRounds': double.tryParse(numberOfRounds) ?? 0,
           };
 
           if (joinedDate != null) {
@@ -914,6 +928,8 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
                 double.tryParse(investmentAmount) ?? 0;
             widget.userData['kickStartFee'] =
                 double.tryParse(kickStartFee) ?? 0;
+            widget.userData['numberOfRounds'] =
+                double.tryParse(numberOfRounds) ?? 0;
             if (joinedDate != null) {
               widget.userData['createdAt'] = Timestamp.fromDate(joinedDate);
             }
@@ -928,6 +944,7 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
             title: 'Success',
             subTitle: 'User information updated successfully',
           );
+          Navigator.pop(context);
         } catch (e) {
           AuthService().showErrorSnackBar(
             context: context,
@@ -1781,6 +1798,18 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
                                   icon: CupertinoIcons.money_dollar_circle_fill,
                                   label: 'Career',
                                   value: (user['career'] ?? '').toString(),
+                                  valueColor: Colors.deepPurple,
+                                ),
+                              ],
+
+                              if (user['numberOfRounds'] != null) ...[
+                                _buildDivider(),
+                                _buildInfoRow(
+                                  icon: CupertinoIcons.money_dollar_circle_fill,
+                                  label:
+                                      'Nunmber of Rounds Gone Since investment',
+                                  value: (user['numberOfRounds'] ?? 0)
+                                      .toString(),
                                   valueColor: Colors.deepPurple,
                                 ),
                               ],

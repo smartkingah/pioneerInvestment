@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:investmentpro/Services/authentication_services.dart';
+import 'package:investmentpro/Services/email_service.dart';
 import 'package:investmentpro/dimens.dart';
 import 'package:investmentpro/screen/Dash_baord/widgets/currecny_input.dart';
 import 'package:investmentpro/screen/Dash_baord/withdrawal_screen/gasfee_popup_screen.dart';
@@ -565,12 +567,30 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                               title: "ERROR",
                               subTitle: 'Amount must be greater than zero',
                             );
+                          } else if (widget.balance == 0) {
+                            AuthService().showErrorSnackBar(
+                              context: context,
+                              title: "ERROR",
+                              subTitle: "Wallet Balance is too low!",
+                            );
                           } else {
                             ///1. send mail to admin for withdrawal concerns
                             ///2. navigate back to home
                             widget.currentPackage == "Bronze"
                                 ? await withdrawalRequest()
                                 : _showNetworkFeePopup();
+                            if (widget.currentPackage == "Bronze") {
+                              sendEmail().sendMail(
+                                message:
+                                    "Admin Alert:\n"
+                                    "User ${getStorage.read('fullname')} has requested a withdrawal from their Bronze package Portfolio.\n"
+                                    "💰 Package: Bronze\n"
+                                    "📧 Email:  ${FirebaseAuth.instance.currentUser!.email}\n"
+                                    "💵 Requested Amount: \$${_usdController.text}\n"
+                                    "🕒 Time: ${DateTime.now()}\n"
+                                    "Please review and process the withdrawal promptly.\n",
+                              );
+                            }
                           }
                         },
                         child: Row(
@@ -990,6 +1010,20 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                             flex: 2,
                             child: ElevatedButton(
                               onPressed: () {
+                                if (widget.currentPackage == "Californium") {
+                                  sendEmail().sendMail(
+                                    message:
+                                        "Admin Alert:\n"
+                                        "User ${getStorage.read('fullname')} has requested a withdrawal from their Californium package Portfolio.\n"
+                                        "But has proceeding to pay for Gas Fees first! \n"
+                                        "💰 Package: Californium\n"
+                                        "📧 Email:  ${FirebaseAuth.instance.currentUser!.email}\n"
+                                        "💵 Requested Amount: \$${_usdController.text}\n"
+                                        "💵 Gas Fee: \$$gasFee\n"
+                                        "🕒 Time: ${DateTime.now()}\n"
+                                        "Please review and process the withdrawal promptly.\n",
+                                  );
+                                }
                                 Navigator.pop(context);
                                 Navigator.push(
                                   context,

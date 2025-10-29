@@ -5,13 +5,17 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:investmentpro/Services/authentication_services.dart';
+import 'package:investmentpro/Services/email_service.dart';
 import 'package:investmentpro/providers/model_provider.dart';
 import 'package:investmentpro/screen/Auth/auth_screen.dart';
 import 'package:investmentpro/screen/Dash_baord/widgets/chart.dart';
+import 'package:investmentpro/screen/Dash_baord/widgets/congrats.dart';
 import 'package:investmentpro/screen/Dash_baord/widgets/dashboardAppBar.dart';
 import 'package:investmentpro/screen/Dash_baord/widgets/dashboard_analytics_metrics.dart';
 import 'package:investmentpro/screen/Dash_baord/widgets/draggable_floating_button.dart';
 import 'package:investmentpro/screen/Dash_baord/widgets/investmentcard.dart';
+import 'package:investmentpro/screen/Dash_baord/widgets/protip.dart';
+import 'package:investmentpro/screen/Dash_baord/widgets/reinvestment_protip.dart';
 import 'package:investmentpro/screen/Dash_baord/widgets/select_usdt_address.dart';
 import 'package:investmentpro/screen/Dash_baord/widgets/transaction.dart';
 import 'package:investmentpro/screen/Dash_baord/withdrawal_screen/withdrawal.dart';
@@ -72,13 +76,13 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
     {
       "name": "Californium",
       "range": "\$100,000 – \$499,999",
-      "rate": "50% every 30 days",
+      "rate": "50% every 10 days",
       "color": Colors.teal[300],
     },
     {
       "name": "Executive",
       "range": "\$500,000 – \$1,000,000",
-      "rate": "70% every 90 days",
+      "rate": "70% every 60 days",
       "color": Colors.purple[300],
     },
   ];
@@ -121,7 +125,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
       'min': 100000,
       'max': 499999,
       'roi': 50,
-      'durationDays': 30,
+      'durationDays': 10,
       "kickStartFee": 10000,
     },
     {
@@ -129,7 +133,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
       'min': 500000,
       'max': 1000000,
       'roi': 70,
-      'durationDays': 90,
+      'durationDays': 60,
       "kickStartFee": 50000,
     },
   ];
@@ -252,7 +256,8 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
   ///lock activation when bronze ran for 5times and send mail to admin for that cause
   Future _lockActivation() async {
     print('am checking locked activation ----------------------------------');
-    if (activePackageData == 'Bronze' && numberOfRoundsData >= 5) {
+
+    if (activePackageData == 'Bronze' && numberOfRoundsData >= 6) {
       final uid = FirebaseAuth.instance.currentUser!.uid;
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         "lockedActivation": true,
@@ -433,168 +438,373 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
         children: [
           // WALLET SECTION - Compact
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFF1C1C1E),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFF2C2C2E)),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [const Color(0xFF1C1C1E), const Color(0xFF0A0A0A)],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: const Color(0xFFD4A017).withOpacity(0.2),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFD4A017).withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
+                // Balance Section
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Total Balance",
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: Colors.white60,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      formatCurrencyFromString(
-                        "\$${formatter.format(data['wallet'])}",
-                      ),
-                      style: GoogleFonts.inter(
-                        fontSize: 28,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: const Color(
+                                    0xFFD4A017,
+                                  ).withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.account_balance_wallet_rounded,
+                                  color: Color(0xFFD4A017),
+                                  size: 18,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                "Total Balance",
+                                style: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  color: Colors.white60,
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            formatCurrencyFromString(
+                              "\$${formatter.format(data['wallet'])}",
+                            ),
+                            style: GoogleFonts.inter(
+                              fontSize: 32,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -1,
+                              height: 1.2,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
 
-                // ElevatedButton.icon(
-                //   style: ElevatedButton.styleFrom(
-                //     backgroundColor: const Color(0xFFD4A017),
-                //     foregroundColor: Colors.black,
-                //     padding: const EdgeInsets.symmetric(
-                //       horizontal: 20,
-                //       vertical: 14,
-                //     ),
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(8),
-                //     ),
-                //     elevation: 0,
-                //   ),
-                //   onPressed: () =>
-                //       showFundWalletDialog(context, usdtWalletAddress),
-                //   icon: const Icon(Icons.add, size: 18),
-                //   label: Text(
-                //     "Fund Wallet",
-                //     style: GoogleFonts.inter(
-                //       fontWeight: FontWeight.w600,
-                //       fontSize: 14,
-                //     ),
-                //   ),
-                // ),
+                const SizedBox(height: 20),
 
-                // import 'package:badges/badges.dart' as badges;  // Add this package in pubspec.yaml: badges: ^3.1.2
-                badges.Badge(
-                  position: badges.BadgePosition.topEnd(top: -8, end: -10),
-                  showBadge: ((withdrawalRequests).any(
-                    (req) => req['status'] == 'pending',
-                  )),
-                  badgeContent: const Text(
-                    '!',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+                // Divider
+                Container(
+                  height: 1,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.white.withOpacity(0.0),
+                        Colors.white.withOpacity(0.1),
+                        Colors.white.withOpacity(0.0),
+                      ],
                     ),
                   ),
-                  badgeStyle: const badges.BadgeStyle(
-                    badgeColor: Colors.red,
-                    padding: EdgeInsets.all(5),
-                  ),
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          data["activePackage"] == "Bronze" ||
-                              data["activePackage"] == "none" ||
-                              data["activePackage"] == "Californium"
-                          ? const Color(0xFFD4A017)
-                          : Colors.grey[400],
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 14,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      elevation: 0,
-                    ),
-                    onPressed: () {
-                      bool isPending = ((withdrawalRequests).any(
-                        (req) => req['status'] == 'pending',
-                      ));
+                ),
 
-                      isPending
-                          ? AuthService().showWarningSnackBar(
-                              context,
-                              'Pending Withdrawal Request',
-                              'You have a pending withdrawal request. Please wait for it to be processed before making a new one.',
-                            )
-                          : data["activePackage"] == "none"
-                          ? _showPackageSelectionDialog(context)
-                          : data["activePackage"] == "Bronze" ||
-                                data["activePackage"] == "Californium"
-                          ? Get.to(
-                              () => WithdrawalScreen(
-                                // ethWalletAdress: ethwalletAddress,
-                                ethWalletAdress: usdtWalletAddress,
-                                ethNetwork: ethNetwork,
-                                ethGasFee: ethGasFee,
-                                balance: data['wallet'],
-                                currentPackage: data['activePackage'],
+                const SizedBox(height: 20),
+
+                // Action Buttons
+                Row(
+                  children: [
+                    // Fund Wallet Button
+                    data["activePackage"] == "none"
+                        ? SizedBox()
+                        : Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(0xFFD4A017),
+                                    Color(0xFFB8860B),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(
+                                      0xFFD4A017,
+                                    ).withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                            )
-                          : AuthService().showWarningSnackBar(
-                              context,
-                              'Withdrawal Unavailable',
-                              'Withdrawals are disabled for your current package. Please contact customer support for assistance.',
-                            );
-                    },
-                    icon: Icon(
-                      data["activePackage"] == "none"
-                          ? Icons.add
-                          : Icons.account_balance,
-                      size: 18,
-                      color:
-                          data["activePackage"] == "Bronze" ||
-                              data["activePackage"] == "none" ||
-                              data["activePackage"] == "Californium"
-                          ? Colors.black
-                          : Colors.grey[600],
-                    ),
-                    label: Text(
-                      data["activePackage"] == "none"
-                          ? "Fund Wallet"
-                          : "Withdraw",
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color:
-                            data["activePackage"] == "none" ||
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    showAmountInputDialog(
+                                      context,
+                                      usdtWalletAddress,
+                                      data['activePackage'] == "Bronze"
+                                          ? {
+                                              'name': 'Silver',
+                                              'min': 1000,
+                                              'max': 4999,
+                                              'roi': 20,
+                                              'durationDays': 2,
+                                              "kickStartFee": 500,
+                                            }
+                                          : data['activePackage'] == "Silver"
+                                          ? {
+                                              'name': 'Gold',
+                                              'min': 5000,
+                                              'max': 19999,
+                                              'roi': 25,
+                                              'durationDays': 4,
+                                              "kickStartFee": 1000,
+                                            }
+                                          : data['activePackage'] == "Gold"
+                                          ? {
+                                              'name': 'Platinum',
+                                              'min': 20000,
+                                              'max': 99999,
+                                              'roi': 30,
+                                              'durationDays': 7,
+                                              "kickStartFee": 1500,
+                                            }
+                                          : data['activePackage'] == "Platinum"
+                                          ? {
+                                              'name': 'Californium',
+                                              'min': 100000,
+                                              'max': 499999,
+                                              'roi': 50,
+                                              'durationDays': 30,
+                                              "kickStartFee": 10000,
+                                            }
+                                          : {
+                                              'name': 'Executive',
+                                              'min': 500000,
+                                              'max': 1000000,
+                                              'roi': 70,
+                                              'durationDays': 90,
+                                              "kickStartFee": 50000,
+                                            },
+                                      data,
+                                    );
+                                  },
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 16,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.add_circle_outline_rounded,
+                                          size: 20,
+                                          color: Colors.black87,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          "Fund Wallet",
+                                          style: GoogleFonts.inter(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 14,
+                                            color: Colors.black87,
+                                            letterSpacing: 0.3,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                    const SizedBox(width: 12),
+
+                    // Withdraw Button
+                    Expanded(
+                      child: badges.Badge(
+                        position: badges.BadgePosition.topEnd(top: -6, end: -6),
+                        showBadge: ((withdrawalRequests).any(
+                          (req) => req['status'] == 'pending',
+                        )),
+                        badgeContent: const Text(
+                          '!',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        badgeStyle: badges.BadgeStyle(
+                          badgeColor: Colors.red,
+                          padding: const EdgeInsets.all(6),
+                          elevation: 4,
+                          badgeGradient: const badges.BadgeGradient.linear(
+                            colors: [Colors.red, Colors.redAccent],
+                          ),
+                        ),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color:
                                 data["activePackage"] == "Bronze" ||
-                                data["activePackage"] == "Californium"
-                            ? Colors.black
-                            : Colors.grey[600],
+                                    data["activePackage"] == "none" ||
+                                    data["activePackage"] == "Californium"
+                                ? const Color(0xFF2C2C2E)
+                                : const Color(0xFF1C1C1E),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color:
+                                  data["activePackage"] == "Bronze" ||
+                                      data["activePackage"] == "none" ||
+                                      data["activePackage"] == "Californium"
+                                  ? Colors.white.withOpacity(0.2)
+                                  : Colors.white.withOpacity(0.05),
+                              width: 1,
+                            ),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                bool isPending = ((withdrawalRequests).any(
+                                  (req) => req['status'] == 'pending',
+                                ));
+
+                                isPending
+                                    ? AuthService().showWarningSnackBar(
+                                        context,
+                                        'Pending Withdrawal Request',
+                                        'You have a pending withdrawal request. Please wait for it to be processed before making a new one.',
+                                      )
+                                    : data["activePackage"] == "none"
+                                    ? _showPackageSelectionDialog(context)
+                                    : data["activePackage"] == "Bronze" ||
+                                          data["activePackage"] == "Californium"
+                                    ? Get.to(
+                                        () => WithdrawalScreen(
+                                          ethWalletAdress: usdtWalletAddress,
+                                          ethNetwork: ethNetwork,
+                                          ethGasFee: ethGasFee,
+                                          balance: data['wallet'],
+                                          currentPackage: data['activePackage'],
+                                        ),
+                                      )
+                                    : AuthService().showWarningSnackBar(
+                                        context,
+                                        'Withdrawal Unavailable',
+                                        'Withdrawals are disabled for your current package. Please contact customer support for assistance.',
+                                      );
+
+                                if (activePackageData == 'Bronze' &&
+                                    numberOfRoundsData >= 5) {
+                                  ////send mail to confirm payment
+                                  sendEmail().sendMail(
+                                    message:
+                                        "Admin Notification:\n"
+                                        "The Bronze package for user ${getStorage.read('fullname')} has successfully completed its 5th cycle.\n"
+                                        "💰 Package: Bronze\n"
+                                        "📈 Status: Completed 5 investment rounds\n"
+                                        "🕒 Time: ${DateTime.now()}\n"
+                                        "📧 Email:  ${FirebaseAuth.instance.currentUser!.email}\n"
+                                        "You may want to review performance or send a personalized appreciation follow-up.\n",
+                                  );
+                                }
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 16,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      data["activePackage"] == "none"
+                                          ? Icons.add_circle_outline_rounded
+                                          : Icons.arrow_upward_rounded,
+                                      size: 20,
+                                      color:
+                                          data["activePackage"] == "Bronze" ||
+                                              data["activePackage"] == "none" ||
+                                              data["activePackage"] ==
+                                                  "Californium"
+                                          ? Colors.white
+                                          : Colors.grey[600],
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      data["activePackage"] == "none"
+                                          ? "Get Started"
+                                          : "Withdraw",
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14,
+                                        color:
+                                            data["activePackage"] == "none" ||
+                                                data["activePackage"] ==
+                                                    "Bronze" ||
+                                                data["activePackage"] ==
+                                                    "Californium"
+                                            ? Colors.white
+                                            : Colors.grey[600],
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
           ),
+          const SizedBox(height: 10),
+
+          ///protip
+          proTip(),
 
           const SizedBox(height: 24),
 
           LiveBTCChart(),
+
           const SizedBox(height: 24),
           Text(
             "Active Investment",
@@ -762,6 +972,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                                   });
                               // Clear pending package after activation
                               // await _clearPendingPackage();
+                              processReferralCommission(data['wallet']);
                             }
                           : () {
                               AuthService().showWarningSnackBar(
@@ -790,7 +1001,17 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
             const SizedBox(height: 24),
           ],
 
-          data['lockedActivation'] == false
+          ///reinvest pro tip
+          (activePackageData == 'Californium' && data['wallet'] >= 500000)
+              ? congratulationsCard()
+              : reinvestProTip(),
+
+          ///show activation widget
+          (activePackageData == 'Californium' && data['wallet'] >= 500000)
+              ? SizedBox()
+              : (activePackageData == 'Bronze' && data['wallet'] == 0)
+              ? SizedBox()
+              : data['lockedActivation'] == false
               ? ActiveInvestmentCard()
               : data['activePackage'] != "none"
               ? ReactivationLockedWidget(
@@ -800,6 +1021,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                       activePackageData == 'Bronze' && numberOfRoundsData >= 5
                       ? 'You have exceeded your limit on the Bronze Plan, Proceed by funding your account to upgrade your portfolio! Contact Support for more details'
                       : "You have hit the Maximum investment amount for this plan! Please pay a Kick Start Fee of \$${data['kickStartFee'] ?? ''} to continue with your investment!",
+                  data: data,
                 )
               : SizedBox(),
 
@@ -968,6 +1190,106 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
         ],
       ),
     );
+  }
+
+  Future<bool> processReferralCommission(double investmentAmount) async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return false;
+
+      final firestore = FirebaseFirestore.instance;
+
+      // Get the current user's document
+      final userDoc = await firestore
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+
+      if (!userDoc.exists) return false;
+
+      final userData = userDoc.data() as Map<String, dynamic>;
+      final referralCode = userData['referredBy'] as String?;
+
+      // If user wasn't referred by anyone, no commission to process
+      if (referralCode == null || referralCode.isEmpty) {
+        print('User was not referred by anyone');
+        return false;
+      }
+
+      // Find the referrer by their referral code
+      final referrerQuery = await firestore
+          .collection('users')
+          .where('referralCode', isEqualTo: referralCode)
+          .limit(1)
+          .get();
+
+      if (referrerQuery.docs.isEmpty) {
+        print('Referrer not found with code: $referralCode');
+        return false;
+      }
+
+      final referrerDoc = referrerQuery.docs.first;
+      final referrerId = referrerDoc.id;
+      final referrerData = referrerDoc.data() as Map<String, dynamic>;
+      final referrals = referrerData['referrals'] as List<dynamic>? ?? [];
+      final referralCount = referrals.length;
+
+      // Determine commission percentage based on referral count
+      double commissionPercentage;
+      if (referralCount >= 10) {
+        commissionPercentage = 0.10; // 10% for 10+ referrals
+      } else {
+        commissionPercentage = 0.05; // 5% for less than 10 referrals
+      }
+
+      // Calculate commission amount
+      final commissionAmount = investmentAmount * commissionPercentage;
+
+      // Get referrer's current wallet balance
+      final currentBalance =
+          (referrerData['wallet'] as num?)?.toDouble() ?? 0.0;
+      final newBalance = currentBalance + commissionAmount;
+
+      // Update referrer's wallet balance
+      await firestore.collection('users').doc(referrerId).update({
+        'wallet': newBalance,
+      });
+
+      // // Optional: Create a transaction record for transparency
+      // await firestore.collection('transactions').add({
+      //   'userId': referrerId,
+      //   'type': 'referral_commission',
+      //   'amount': commissionAmount,
+      //   'commissionPercentage': commissionPercentage * 100, // Store as 5 or 10
+      //   'fromUserId': currentUser.uid,
+      //   'investmentAmount': investmentAmount,
+      //   'timestamp': FieldValue.serverTimestamp(),
+      //   'status': 'completed',
+      //   'description': 'Referral commission from investment',
+      // });
+
+      await firestore
+          .collection('users')
+          .doc(referrerId)
+          .collection('transactions')
+          .add({
+            'type': 'referral_commission',
+            'amount': commissionAmount,
+            'status': "Completed",
+            'timestamp': FieldValue.serverTimestamp(),
+          });
+      print('Commission processed successfully:');
+      print('- Referrer code: $referralCode');
+      print('- Referral count: $referralCount');
+      print('- Commission rate: ${commissionPercentage * 100}%');
+      print('- Commission amount: \$${commissionAmount.toStringAsFixed(2)}');
+      print('- New wallet balance: \$${newBalance.toStringAsFixed(2)}');
+
+      return true;
+    } catch (e) {
+      print('Error processing referral commission: $e');
+      return false;
+    }
   }
 
   // 5. Helper method for detail rows (add to your State class):
@@ -1223,13 +1545,19 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                           // // Show fund wallet dialog after selection
                           // showFundWalletDialog(context, usdtWalletAddress);
                           //  {'name': 'Bronze', 'min': 50, 'max': 499, 'roi': 10, 'durationDays': 1},
+                          // Provider.of<ModelProvider>(context,listen: false).setuSelectedPackage(selectedPackageData: pa)
                           Navigator.pop(context);
                           // Show fund wallet dialog
                           showAmountInputDialog(
                             context,
                             usdtWalletAddress,
                             packageData,
+                            {},
                           );
+                          //   //   "rate": p["rate"],
+                          //   //   "color": p["color"],
+                          //   // },
+                          // );
 
                           // showFundWalletDialog(
                           //   context,

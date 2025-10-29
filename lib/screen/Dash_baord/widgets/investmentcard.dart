@@ -96,7 +96,7 @@ class _ActiveInvestmentCardState extends State<ActiveInvestmentCard> {
       ///user exists lets proceed to trigger payout
       final data = snap.data()!;
       final double investAmount = data['investmentAmount'];
-      final double packageRoi = data['packageRoi '];
+      final double packageRoi = data['packageRoi'];
       final wallet = double.tryParse(data['wallet'].toString()) ?? 0.0;
 
       final duration = data['duration'] ?? {};
@@ -314,10 +314,12 @@ class ReactivationLockedWidget extends StatelessWidget {
   final String packageName;
   final String subTitle;
   final String usdtWalletAddress;
+  final dynamic? data;
   const ReactivationLockedWidget({
     required this.packageName,
     required this.subTitle,
     required this.usdtWalletAddress,
+    required this.data,
     super.key,
   });
 
@@ -450,6 +452,7 @@ class ReactivationLockedWidget extends StatelessWidget {
                           'durationDays': 90,
                           "kickStartFee": 50000,
                         },
+                  data,
                 );
               },
               icon: const Icon(Icons.wallet_rounded),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:investmentpro/Services/email_service.dart';
 import 'package:investmentpro/providers/model_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +14,9 @@ AuthService authService = AuthService();
 class AuthService {
   static final _auth = FirebaseAuth.instance;
   static final _fs = FirebaseFirestore.instance;
+  static String generateReferralCode(String uid) {
+    return uid.substring(0, 4).toUpperCase();
+  }
 
   // Signup
   static Future<User?> signUp({
@@ -22,15 +26,20 @@ class AuthService {
     required String phone,
     required String country,
     required String address,
-    required context,
+    required String referredBy, // The code user entered when signing up
+    required BuildContext context,
   }) async {
     final cred = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
     final user = cred.user;
+
     if (user != null) {
-      // create user doc
+      // Generate the user’s own referral code
+      String myReferralCode = generateReferralCode(user.uid);
+
+      // Create user document
       await _fs.collection('users').doc(user.uid).set({
         'fullname': fullname,
         'email': email,
@@ -40,26 +49,50 @@ class AuthService {
         'photoUrl': null,
         'createdAt': FieldValue.serverTimestamp(),
         'wallet': 0.0,
-        "password": password,
+        'password': password,
         'totalEarnings': 0,
         'package': "none",
         'activePackage': "none",
-        "investmentAmount": 0,
-        "lastInvestmentDate": null,
-        "withdrawalRequest": [],
-        "maxPackageLimit": 0,
-        "dailyGrowth": 0,
-        "lockedActivation": false,
-        "nextPayoutDate": null,
-        "kickStartFee": 0,
-        "numberOfRounds": 0,
+        'investmentAmount': 0,
+        'lastInvestmentDate': null,
+        'withdrawalRequest': [],
+        'maxPackageLimit': 0,
+        'dailyGrowth': 0,
+        'lockedActivation': false,
+        'nextPayoutDate': null,
+        'kickStartFee': 0,
+        'numberOfRounds': 0,
+
+        // 👇 Added fields
+        'referralCode': myReferralCode + fullname, // their own code
+        'referredBy': referredBy.isNotEmpty
+            ? referredBy
+            : '', // who referred them
       });
+
+      // 👇 Optionally: Update the referrer’s referral count
+      if (referredBy.isNotEmpty) {
+        final refQuery = await _fs
+            .collection('users')
+            .where('referralCode', isEqualTo: referredBy)
+            .limit(1)
+            .get();
+
+        if (refQuery.docs.isNotEmpty) {
+          final refDoc = refQuery.docs.first;
+          await refDoc.reference.update({
+            'referrals': FieldValue.arrayUnion([user.uid]),
+          });
+        }
+      }
+
       getStorage.write('fullname', fullname);
       Provider.of<ModelProvider>(
         context,
         listen: false,
       ).setuserNameData(userName: getStorage.read('fullname'));
     }
+
     return user;
   }
 
@@ -91,6 +124,17 @@ class AuthService {
           context,
           listen: false,
         ).setuserNameData(userName: getStorage.read('fullname'));
+
+        ///sendmail
+        sendEmail().sendMail(
+          message:
+              "Admin Alert:\n"
+              "User ${getStorage.read('fullname')} just logged in to their account.\n"
+              "🕒 Time:  ${DateTime.now()}\n"
+              "📧 Email:  ${FirebaseAuth.instance.currentUser!.email}\n"
+              // "📱 IP / Device: [DeviceInfo]"
+              "This is an automatic security and activity notification from Pioneer Capital LTD",
+        );
       });
     } on FirebaseAuthException catch (e) {
       Get.snackbar(
@@ -171,11 +215,12 @@ class AuthService {
       // Step 5: Update Firestore
       await userRef
           .update({
-            'wallet': wallet - investAmount,
+            // 'wallet': wallet - investAmount,
+            'wallet': wallet - wallet,
             'activePackage': package['name'],
             'maxPackageLimit': package['max'],
             'investmentAmount': investAmount,
-            'packageRoi ': roi,
+            'packageRoi': roi,
             'lastInvestmentDate': DateTime.now().toIso8601String(),
             'nextPayoutDate': nextPayout.toIso8601String(),
             'dailyGrowth': dailyGrowth,

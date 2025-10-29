@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:investmentpro/Services/authentication_services.dart';
@@ -20,6 +21,7 @@ class _SignupPageState extends State<SignupPage> {
   final _address = TextEditingController();
   final _password = TextEditingController();
   final _confirm = TextEditingController();
+  final _referredBy = TextEditingController();
 
   bool _loading = false;
   bool _obscurePass = true;
@@ -33,10 +35,13 @@ class _SignupPageState extends State<SignupPage> {
     final address = _address.text.trim();
     final password = _password.text;
     final confirm = _confirm.text;
+    final referredBy = _referredBy.text;
 
     if (fullname.isEmpty ||
         email.isEmpty ||
         password.isEmpty ||
+        country.isEmpty ||
+        phone.isEmpty ||
         confirm.isEmpty) {
       Get.snackbar(
         'Error',
@@ -65,6 +70,7 @@ class _SignupPageState extends State<SignupPage> {
         country: country,
         address: address,
         context: context,
+        referredBy: referredBy,
       );
       if (user != null) {
         Navigator.pushReplacement(
@@ -120,7 +126,19 @@ class _SignupPageState extends State<SignupPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(Icons.layers, color: yellow, size: 60),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: CachedNetworkImage(
+                fit: BoxFit.cover,
+                imageUrl:
+                    'https://res.cloudinary.com/dy523yrlh/image/upload/v1761692169/PCL_LOGO_tjuaw6.png',
+                // width: double.infinity,
+                // height: double.infinity,
+                width: 120,
+                height: 120,
+              ),
+            ),
+            // Icon(Icons.layers, color: yellow, size: 60),
             const SizedBox(height: 16),
             const Text(
               'Create Account',
@@ -188,6 +206,8 @@ class _SignupPageState extends State<SignupPage> {
                     setState(() => _obscureConfirm = !_obscureConfirm),
               ),
             ),
+            const SizedBox(height: 12),
+            _buildField('Referred By', _referredBy, hint: '0000 (OPTIONAL)'),
             const SizedBox(height: 22),
 
             LongButton(

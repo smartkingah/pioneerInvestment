@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:investmentpro/Services/authentication_services.dart';
 import 'package:investmentpro/Services/cloudinary_services.dart';
+import 'package:investmentpro/screen/Dash_baord/widgets/referal_widget.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({Key? key}) : super(key: key);
@@ -393,7 +394,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             ),
                     ),
                   ),
-
+                  const SizedBox(height: 20),
+                  referralCodeWidget(),
                   const SizedBox(height: 32),
                 ],
               ),
