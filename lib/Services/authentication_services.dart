@@ -224,7 +224,7 @@ class AuthService {
       }
 
       // Step 2: Deduct investment amount (use packageMin for simplicity)
-      final double investAmount = packageMin;
+      final double investAmount = wallet;
       final double roi = packageRoi / 100;
 
       // Step 3: Calculate daily growth
