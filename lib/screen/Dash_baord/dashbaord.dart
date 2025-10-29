@@ -430,7 +430,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
       padding: EdgeInsets.symmetric(
         horizontal: isMobile
             ? 16
-            : (screenWidth > 1200 ? screenWidth * 0.1 : 32),
+            : (screenWidth > 1200 ? screenWidth * 0.2 : 32),
         vertical: 20,
       ),
       child: Column(
@@ -1007,7 +1007,9 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
               : reinvestProTip(),
 
           ///show activation widget
-          (activePackageData == 'Californium' && data['wallet'] >= 500000)
+          data['activePackage'] == "none"
+              ? SizedBox()
+              : (activePackageData == 'Californium' && data['wallet'] >= 500000)
               ? SizedBox()
               : (activePackageData == 'Bronze' && data['wallet'] == 0)
               ? SizedBox()
@@ -1377,92 +1379,109 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
   }
 
   Future<void> showLogoutDialog() async {
+    final bool isMobile = MediaQuery.of(context).size.width < 600;
+    final double screenWidth = MediaQuery.of(context).size.width;
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        return Dialog(
-          backgroundColor: const Color(0xFF1C1C1E),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+        return Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile
+                ? 16
+                : (screenWidth > 1200 ? screenWidth * 0.2 : 32),
+            vertical: 20,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.redAccent.withOpacity(0.1),
-                    shape: BoxShape.circle,
+          child: Dialog(
+            backgroundColor: const Color(0xFF1C1C1E),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.logout_rounded,
+                      color: Colors.redAccent,
+                      size: 32,
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.logout_rounded,
-                    color: Colors.redAccent,
-                    size: 32,
+                  const SizedBox(height: 20),
+                  Text(
+                    "Confirm Logout",
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  "Confirm Logout",
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
+                  const SizedBox(height: 10),
+                  Text(
+                    "Are you sure you want to log out of Pioneer Capital Limited?",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      color: Colors.white60,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "Are you sure you want to log out of Pioneer Capital Limited?",
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(color: Colors.white60, fontSize: 14),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          side: const BorderSide(color: Color(0xFF2C2C2E)),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(color: Color(0xFF2C2C2E)),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(
+                            "Cancel",
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(
-                          "Cancel",
-                          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.redAccent,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
                           ),
-                          elevation: 0,
-                        ),
-                        onPressed: () async {
-                          Navigator.pop(context);
-                          await _logout();
-                        },
-                        child: Text(
-                          "Logout",
-                          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            await _logout();
+                          },
+                          child: Text(
+                            "Logout",
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );

@@ -54,123 +54,133 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen>
 
   @override
   Widget build(BuildContext context) {
+    final bool isMobile = MediaQuery.of(context).size.width < 600;
+    final double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       body: SafeArea(
-        child: Column(
-          children: [
-            CustomAppBar(),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile
+                ? 16
+                : (screenWidth > 1200 ? screenWidth * 0.2 : 32),
+            vertical: 20,
+          ),
+          child: Column(
+            children: [
+              CustomAppBar(),
 
-            // Search Bar
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Container(
+              // Search Bar
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A1A1A),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.1),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value.toLowerCase();
+                      });
+                    },
+                    style: GoogleFonts.inter(color: Colors.white, fontSize: 15),
+                    decoration: InputDecoration(
+                      hintText: 'Search users...',
+                      hintStyle: GoogleFonts.inter(
+                        color: Colors.white38,
+                        fontSize: 15,
+                      ),
+                      prefixIcon: const Icon(
+                        CupertinoIcons.search,
+                        color: Colors.white38,
+                        size: 20,
+                      ),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(
+                                CupertinoIcons.clear_circled_solid,
+                                color: Colors.white38,
+                                size: 20,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.clear();
+                                  _searchQuery = '';
+                                });
+                              },
+                            )
+                          : null,
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Tabs
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1A1A1A),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: Colors.white.withOpacity(0.1),
                     width: 1.5,
                   ),
                 ),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value.toLowerCase();
-                    });
-                  },
-                  style: GoogleFonts.inter(color: Colors.white, fontSize: 15),
-                  decoration: InputDecoration(
-                    hintText: 'Search users...',
-                    hintStyle: GoogleFonts.inter(
-                      color: Colors.white38,
-                      fontSize: 15,
-                    ),
-                    prefixIcon: const Icon(
-                      CupertinoIcons.search,
-                      color: Colors.white38,
-                      size: 20,
-                    ),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(
-                              CupertinoIcons.clear_circled_solid,
-                              color: Colors.white38,
-                              size: 20,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _searchController.clear();
-                                _searchQuery = '';
-                              });
-                            },
-                          )
-                        : null,
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
+                child: TabBar(
+                  controller: _tabController,
+                  indicator: BoxDecoration(
+                    color: const Color(0xFFD4A017),
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  dividerColor: Colors.transparent,
+                  labelColor: Colors.black,
+                  unselectedLabelColor: Colors.white60,
+                  labelStyle: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  unselectedLabelStyle: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  tabs: const [
+                    Tab(text: 'All Users'),
+                    Tab(text: 'Pending Deposits'),
+                    Tab(text: 'Pending Withdrawals'),
+                    Tab(text: 'Referals'),
+                  ],
                 ),
               ),
-            ),
 
-            // Tabs
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1A1A1A),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.1),
-                  width: 1.5,
-                ),
-              ),
-              child: TabBar(
-                controller: _tabController,
-                indicator: BoxDecoration(
-                  color: const Color(0xFFD4A017),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                indicatorSize: TabBarIndicatorSize.tab,
-                dividerColor: Colors.transparent,
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.white60,
-                labelStyle: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                ),
-                unselectedLabelStyle: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-                tabs: const [
-                  Tab(text: 'All Users'),
-                  Tab(text: 'Pending Deposits'),
-                  Tab(text: 'Pending Withdrawals'),
-                  Tab(text: 'Referals'),
-                ],
-              ),
-            ),
+              const SizedBox(height: 16),
 
-            const SizedBox(height: 16),
-
-            // Tab Views
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildAllUsersTab(),
-                  _buildPendingPackagesTab(),
-                  _buildWithdrawalRequestsTab(),
-                  ReferralTreeTab(),
-                ],
+              // Tab Views
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildAllUsersTab(),
+                    _buildPendingPackagesTab(),
+                    _buildWithdrawalRequestsTab(),
+                    ReferralTreeTab(),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

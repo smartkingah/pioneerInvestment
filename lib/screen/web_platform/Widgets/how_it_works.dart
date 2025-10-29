@@ -70,7 +70,7 @@ class HowItWorksPage extends StatelessWidget {
                       ),
                       if (!isMobile) const SizedBox(width: 40),
                       _buildStepCard(
-                        icon: Icons.gif_outlined,
+                        icon: Icons.playlist_add_check_circle_sharp,
                         title: 'Select a Package',
                         description:
                             'Choose an investment plan aligned with your financial goals and risk tolerance.',

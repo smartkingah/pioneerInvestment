@@ -47,7 +47,7 @@ class AmbassadorPage extends StatelessWidget {
         Text(
           "Ambassadorship\nProgram.\nEarn While You Refer.",
           style: GoogleFonts.playfairDisplay(
-            fontSize: 42,
+            fontSize: 40,
             fontWeight: FontWeight.bold,
             color: Colors.white,
             height: 1.2,

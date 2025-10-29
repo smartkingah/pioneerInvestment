@@ -6,6 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:investmentpro/Services/email_service.dart';
 import 'package:investmentpro/providers/model_provider.dart';
+import 'package:investmentpro/screen/Auth/auth_screen.dart';
 import 'package:provider/provider.dart';
 
 GetStorage getStorage = GetStorage();
@@ -136,6 +137,14 @@ class AuthService {
               "This is an automatic security and activity notification from Pioneer Capital LTD",
         );
       });
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return AuthState();
+          },
+        ),
+      );
     } on FirebaseAuthException catch (e) {
       Get.snackbar(
         'Login error',

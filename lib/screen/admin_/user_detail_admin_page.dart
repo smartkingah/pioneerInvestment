@@ -991,6 +991,8 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isMobile = MediaQuery.of(context).size.width < 600;
+    final double screenWidth = MediaQuery.of(context).size.width;
     final user = widget.userData;
     final bool isLocked = user['lockedActivation'] ?? false;
     final formatter = NumberFormat("#,##0.00", "en_US");
@@ -1029,106 +1031,63 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
       body: Stack(
         children: [
           SingleChildScrollView(
-            child: Column(
-              children: [
-                // Profile Header with Glassmorphism Effect
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        const Color(0xFFD4A017).withOpacity(0.15),
-                        const Color(0xFF1A1A1A).withOpacity(0.8),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile
+                    ? 16
+                    : (screenWidth > 1200 ? screenWidth * 0.2 : 32),
+                vertical: 20,
+              ),
+              child: Column(
+                children: [
+                  // Profile Header with Glassmorphism Effect
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          const Color(0xFFD4A017).withOpacity(0.15),
+                          const Color(0xFF1A1A1A).withOpacity(0.8),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: const Color(0xFFD4A017).withOpacity(0.2),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFD4A017).withOpacity(0.1),
+                          blurRadius: 20,
+                          spreadRadius: 2,
+                        ),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: const Color(0xFFD4A017).withOpacity(0.2),
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFD4A017).withOpacity(0.1),
-                        blurRadius: 20,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Container(
-                            width: 110,
-                            height: 110,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                colors: [
-                                  isLocked
-                                      ? Colors.red
-                                      : const Color(0xFF0ECB81),
-                                  isLocked
-                                      ? Colors.red.shade900
-                                      : const Color(
-                                          0xFF0ECB81,
-                                        ).withOpacity(0.6),
-                                ],
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      (isLocked
-                                              ? Colors.red
-                                              : const Color(0xFF0ECB81))
-                                          .withOpacity(0.4),
-                                  blurRadius: 20,
-                                  spreadRadius: 3,
-                                ),
-                              ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(4),
-                              child: CircleAvatar(
-                                radius: 52,
-                                backgroundColor: const Color(0xFF0A0A0A),
-                                child: CircleAvatar(
-                                  radius: 48,
-                                  backgroundColor: Colors.white.withOpacity(
-                                    0.1,
-                                  ),
-                                  backgroundImage: user['photoUrl'] != null
-                                      ? NetworkImage(user['photoUrl'])
-                                      : null,
-                                  child: user['photoUrl'] == null
-                                      ? const Icon(
-                                          CupertinoIcons.person_fill,
-                                          color: Colors.white38,
-                                          size: 40,
-                                        )
-                                      : null,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            right: 0,
-                            bottom: 0,
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
+                    child: Column(
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 110,
+                              height: 110,
                               decoration: BoxDecoration(
-                                color: isLocked
-                                    ? Colors.red
-                                    : const Color(0xFF0ECB81),
                                 shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: const Color(0xFF0A0A0A),
-                                  width: 3,
+                                gradient: LinearGradient(
+                                  colors: [
+                                    isLocked
+                                        ? Colors.red
+                                        : const Color(0xFF0ECB81),
+                                    isLocked
+                                        ? Colors.red.shade900
+                                        : const Color(
+                                            0xFF0ECB81,
+                                          ).withOpacity(0.6),
+                                  ],
                                 ),
                                 boxShadow: [
                                   BoxShadow(
@@ -1136,764 +1095,134 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
                                         (isLocked
                                                 ? Colors.red
                                                 : const Color(0xFF0ECB81))
-                                            .withOpacity(0.5),
-                                    blurRadius: 10,
-                                    spreadRadius: 1,
+                                            .withOpacity(0.4),
+                                    blurRadius: 20,
+                                    spreadRadius: 3,
                                   ),
                                 ],
                               ),
-                              child: Icon(
-                                isLocked
-                                    ? CupertinoIcons.lock_fill
-                                    : CupertinoIcons.checkmark_alt,
-                                color: Colors.white,
-                                size: 16,
+                              child: Padding(
+                                padding: const EdgeInsets.all(4),
+                                child: CircleAvatar(
+                                  radius: 52,
+                                  backgroundColor: const Color(0xFF0A0A0A),
+                                  child: CircleAvatar(
+                                    radius: 48,
+                                    backgroundColor: Colors.white.withOpacity(
+                                      0.1,
+                                    ),
+                                    backgroundImage: user['photoUrl'] != null
+                                        ? NetworkImage(user['photoUrl'])
+                                        : null,
+                                    child: user['photoUrl'] == null
+                                        ? const Icon(
+                                            CupertinoIcons.person_fill,
+                                            color: Colors.white38,
+                                            size: 40,
+                                          )
+                                        : null,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        user['fullname'] ?? 'N/A',
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 26,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.8,
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: isLocked
+                                      ? Colors.red
+                                      : const Color(0xFF0ECB81),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: const Color(0xFF0A0A0A),
+                                    width: 3,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          (isLocked
+                                                  ? Colors.red
+                                                  : const Color(0xFF0ECB81))
+                                              .withOpacity(0.5),
+                                      blurRadius: 10,
+                                      spreadRadius: 1,
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  isLocked
+                                      ? CupertinoIcons.lock_fill
+                                      : CupertinoIcons.checkmark_alt,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          user['email'] ?? 'N/A',
+                        const SizedBox(height: 20),
+                        Text(
+                          user['fullname'] ?? 'N/A',
                           style: GoogleFonts.inter(
-                            color: Colors.white70,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                            fontSize: 26,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.8,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Content
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Account Lock Toggle - More Modern
-                      Container(
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              (isLocked ? Colors.red : const Color(0xFF0ECB81))
-                                  .withOpacity(0.15),
-                              Colors.transparent,
-                            ],
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
                           ),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color:
-                                (isLocked
-                                        ? Colors.red
-                                        : const Color(0xFF0ECB81))
-                                    .withOpacity(0.3),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color:
-                                    (isLocked
-                                            ? Colors.red
-                                            : const Color(0xFF0ECB81))
-                                        .withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color:
-                                        (isLocked
-                                                ? Colors.red
-                                                : const Color(0xFF0ECB81))
-                                            .withOpacity(0.3),
-                                    blurRadius: 8,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
-                              ),
-                              child: Icon(
-                                isLocked
-                                    ? CupertinoIcons.lock_shield_fill
-                                    : CupertinoIcons.lock_shield,
-                                color: isLocked
-                                    ? Colors.red
-                                    : const Color(0xFF0ECB81),
-                                size: 22,
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Account Status',
-                                    style: GoogleFonts.inter(
-                                      color: Colors.white54,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    isLocked ? 'Locked' : 'Active',
-                                    style: GoogleFonts.inter(
-                                      color: isLocked
-                                          ? Colors.red
-                                          : const Color(0xFF0ECB81),
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: -0.5,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Transform.scale(
-                              scale: 0.9,
-                              child: CupertinoSwitch(
-                                value: !isLocked,
-                                activeColor: const Color(0xFF0ECB81),
-                                onChanged: (value) =>
-                                    _toggleAccountLock(!value),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Wallet Section - Enhanced
-                      _buildSectionHeader(
-                        'Wallet Management',
-                        CupertinoIcons.creditcard_fill,
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              const Color(0xFFD4A017).withOpacity(0.2),
-                              const Color(0xFFD4A017).withOpacity(0.05),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: const Color(0xFFD4A017).withOpacity(0.4),
-                            width: 1.5,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFFD4A017).withOpacity(0.1),
-                              blurRadius: 15,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: const Color(
-                                      0xFFD4A017,
-                                    ).withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(
-                                    CupertinoIcons.money_dollar_circle_fill,
-                                    color: Color(0xFFD4A017),
-                                    size: 20,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  'Current Balance',
-                                  style: GoogleFonts.inter(
-                                    color: Colors.white70,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.3,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              '\$${formatter.format(user['wallet'] ?? 0)}',
-                              style: GoogleFonts.inter(
-                                color: const Color(0xFFD4A017),
-                                fontSize: 32,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -1.5,
-                              ),
-                            ),
-                            const SizedBox(height: 18),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF1A1A1A),
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.1),
-                                ),
-                              ),
-                              child: TextField(
-                                controller: _fundController,
-                                keyboardType: TextInputType.number,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                decoration: InputDecoration(
-                                  hintText: 'Enter new wallet balance',
-                                  hintStyle: GoogleFonts.inter(
-                                    color: Colors.white38,
-                                  ),
-                                  prefixIcon: const Icon(
-                                    CupertinoIcons.money_dollar,
-                                    color: Color(0xFFD4A017),
-                                  ),
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.all(16),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 14),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: _updateWallet,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFD4A017),
-                                  foregroundColor: Colors.black,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  elevation: 0,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(
-                                      CupertinoIcons.checkmark_circle_fill,
-                                      size: 20,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      'Update Wallet',
-                                      style: GoogleFonts.inter(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Package Management - Enhanced
-                      _buildSectionHeader(
-                        'Package Management',
-                        CupertinoIcons.cube_box_fill,
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1A1A1A),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.blue.withOpacity(0.3),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(
-                                    CupertinoIcons.cube_box_fill,
-                                    color: Colors.blue,
-                                    size: 18,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Current Package',
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white54,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
-                                    Text(
-                                      user['activePackage'] == 'none'
-                                          ? 'No Package'
-                                          : user['activePackage'] ?? 'N/A',
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: -0.3,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.05),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.15),
-                                ),
-                              ),
-                              child: DropdownButton<String>(
-                                value: _selectedPackage,
-                                hint: Text(
-                                  'Select new package',
-                                  style: GoogleFonts.inter(
-                                    color: Colors.white38,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                isExpanded: true,
-                                dropdownColor: const Color(0xFF1A1A1A),
-                                underline: const SizedBox(),
-                                icon: const Icon(
-                                  CupertinoIcons.chevron_down,
-                                  color: Colors.white38,
-                                  size: 18,
-                                ),
-                                items: investmentPackages.map((package) {
-                                  return DropdownMenuItem<String>(
-                                    value: package['name'],
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(6),
-                                          decoration: BoxDecoration(
-                                            color: _getPackageColor(
-                                              package['name'],
-                                            ).withOpacity(0.2),
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                          ),
-                                          child: Icon(
-                                            CupertinoIcons.sparkles,
-                                            size: 12,
-                                            color: _getPackageColor(
-                                              package['name'],
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                package['name'],
-                                                style: GoogleFonts.inter(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                              Text(
-                                                '\$${package['min']}-\$${package['max']} • ${package['roi']}% ROI',
-                                                style: GoogleFonts.inter(
-                                                  color: Colors.white54,
-                                                  fontSize: 10,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  setState(() => _selectedPackage = value);
-                                },
-                              ),
-                            ),
-                            const SizedBox(height: 14),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: _updatePackage,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  elevation: 0,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(
-                                      CupertinoIcons.arrow_2_squarepath,
-                                      size: 18,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      'Switch Package',
-                                      style: GoogleFonts.inter(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // User Information - Collapsible
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            _isUserInfoExpanded = !_isUserInfoExpanded;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.purple.withOpacity(0.15),
-                                Colors.purple.withOpacity(0.05),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.purple.withOpacity(0.3),
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.purple.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Icon(
-                                  CupertinoIcons.person_crop_circle_fill,
-                                  color: Colors.purple,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  'User Information',
-                                  style: GoogleFonts.inter(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: -0.5,
-                                  ),
-                                ),
-                              ),
-                              AnimatedRotation(
-                                turns: _isUserInfoExpanded ? 0.5 : 0,
-                                duration: const Duration(milliseconds: 300),
-                                child: const Icon(
-                                  CupertinoIcons.chevron_down,
-                                  color: Colors.purple,
-                                  size: 20,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      AnimatedCrossFade(
-                        firstChild: const SizedBox(width: double.infinity),
-                        secondChild: Container(
-                          padding: const EdgeInsets.all(18),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1A1A1A),
+                            color: Colors.white.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.1),
-                              width: 1.5,
+                          ),
+                          child: Text(
+                            user['email'] ?? 'N/A',
+                            style: GoogleFonts.inter(
+                              color: Colors.white70,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
                             ),
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  InkWell(
-                                    onTap: () => _showEditUserInfoDialog(),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 8,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: const Color(
-                                          0xFFD4A017,
-                                        ).withOpacity(0.15),
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          color: const Color(
-                                            0xFFD4A017,
-                                          ).withOpacity(0.3),
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            CupertinoIcons.pencil,
-                                            color: Color(0xFFD4A017),
-                                            size: 16,
-                                          ),
-                                          const SizedBox(width: 6),
-                                          Text(
-                                            'Edit',
-                                            style: GoogleFonts.inter(
-                                              color: const Color(0xFFD4A017),
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              _buildInfoRow(
-                                icon: CupertinoIcons.person_fill,
-                                label: 'Full Name',
-                                value: user['fullname'] ?? 'N/A',
-                              ),
-                              _buildDivider(),
-                              _buildInfoRow(
-                                icon: CupertinoIcons.mail_solid,
-                                label: 'Email',
-                                value: user['email'] ?? 'N/A',
-                              ),
-                              _buildDivider(),
-                              _buildInfoRow(
-                                icon: CupertinoIcons.phone_fill,
-                                label: 'Phone',
-                                value: user['phone'] ?? 'N/A',
-                              ),
-                              _buildDivider(),
-                              _buildInfoRow(
-                                icon: CupertinoIcons.location_solid,
-                                label: 'Address',
-                                value: user['address'] ?? 'N/A',
-                              ),
-                              _buildDivider(),
-                              _buildInfoRow(
-                                icon: CupertinoIcons.location_solid,
-                                label: 'Password',
-                                value: user['password'] ?? 'N/A',
-                              ),
-                              _buildDivider(),
-                              _buildInfoRow(
-                                icon: CupertinoIcons.location_solid,
-                                label: 'Package Duration of Days',
-                                value: user['duration'].toString() ?? 'N/A',
-                              ),
-                              _buildDivider(),
-                              _buildInfoRow(
-                                icon: CupertinoIcons.flag_fill,
-                                label: 'Country',
-                                value: user['country'] ?? 'N/A',
-                              ),
-                              _buildDivider(),
-                              _buildInfoRow(
-                                icon: CupertinoIcons.calendar,
-                                label: 'Joined',
-                                value: _formatDateTime(user['createdAt']),
-                              ),
-                              if (user['career'] != null) ...[
-                                _buildDivider(),
-                                _buildInfoRow(
-                                  icon: CupertinoIcons.money_dollar_circle_fill,
-                                  label: 'Career',
-                                  value: (user['career'] ?? '').toString(),
-                                  valueColor: Colors.deepPurple,
-                                ),
-                              ],
-
-                              if (user['numberOfRounds'] != null) ...[
-                                _buildDivider(),
-                                _buildInfoRow(
-                                  icon: CupertinoIcons.money_dollar_circle_fill,
-                                  label:
-                                      'Nunmber of Rounds Gone Since investment',
-                                  value: (user['numberOfRounds'] ?? 0)
-                                      .toString(),
-                                  valueColor: Colors.deepPurple,
-                                ),
-                              ],
-                              _buildDivider(),
-                              _buildInfoRow(
-                                icon: CupertinoIcons.chart_bar_fill,
-                                label: 'Total Earnings',
-                                value:
-                                    '\$${(user['totalEarnings'] ?? 0).toStringAsFixed(2)}',
-                                valueColor: const Color(0xFF0ECB81),
-                              ),
-                              _buildDivider(),
-                              _buildInfoRow(
-                                icon: CupertinoIcons.money_dollar_circle_fill,
-                                label: 'Investment Amount',
-                                value:
-                                    '\$${(user['investmentAmount'] ?? 0).toStringAsFixed(2)}',
-                                valueColor: Colors.blue,
-                              ),
-                              if (user['usdtAddress'] != null) ...[
-                                _buildDivider(),
-                                _buildInfoRow(
-                                  icon: CupertinoIcons.money_dollar_circle_fill,
-                                  label: 'USDT Wallet Address',
-                                  value: (user['usdtAddress'] ?? 0).toString(),
-                                  valueColor: Colors.deepPurple,
-                                ),
-                              ],
-                              if (user['nextPayoutDate'] != null) ...[
-                                _buildDivider(),
-                                _buildInfoRow(
-                                  icon: CupertinoIcons.calendar_today,
-                                  label: 'Next Payout',
-                                  value: _formatDateTime(
-                                    user['nextPayoutDate'],
-                                  ),
-                                  valueColor: Colors.orange,
-                                ),
-                              ],
-                              if (user['kickStartFee'] != null &&
-                                  user['kickStartFee'] > 0) ...[
-                                _buildDivider(),
-                                _buildInfoRow(
-                                  icon: CupertinoIcons.flame_fill,
-                                  label: 'Kickstart Fee',
-                                  value:
-                                      '\$${(user['kickStartFee'] ?? 0).toStringAsFixed(2)}',
-                                  valueColor: Colors.red,
-                                ),
-                              ],
-                            ],
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                        crossFadeState: _isUserInfoExpanded
-                            ? CrossFadeState.showSecond
-                            : CrossFadeState.showFirst,
-                        duration: const Duration(milliseconds: 300),
-                      ),
+                      ],
+                    ),
+                  ),
 
-                      const SizedBox(height: 24),
-
-                      TransactionHistorySection(userId: widget.userId),
-
-                      // Pending Package
-                      if (user['pendingPackage'] != null) ...[
-                        _buildSectionHeader(
-                          'Pending Package',
-                          CupertinoIcons.hourglass,
-                        ),
-                        const SizedBox(height: 12),
+                  // Content
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Account Lock Toggle - More Modern
                         Container(
                           padding: const EdgeInsets.all(18),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
                               colors: [
-                                Colors.orange.withOpacity(0.2),
-                                Colors.orange.withOpacity(0.05),
+                                (isLocked
+                                        ? Colors.red
+                                        : const Color(0xFF0ECB81))
+                                    .withOpacity(0.15),
+                                Colors.transparent,
                               ],
                             ),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: Colors.orange.withOpacity(0.4),
+                              color:
+                                  (isLocked
+                                          ? Colors.red
+                                          : const Color(0xFF0ECB81))
+                                      .withOpacity(0.3),
                               width: 1.5,
                             ),
                           ),
@@ -1902,12 +1231,31 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
                               Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.orange.withOpacity(0.2),
+                                  color:
+                                      (isLocked
+                                              ? Colors.red
+                                              : const Color(0xFF0ECB81))
+                                          .withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          (isLocked
+                                                  ? Colors.red
+                                                  : const Color(0xFF0ECB81))
+                                              .withOpacity(0.3),
+                                      blurRadius: 8,
+                                      spreadRadius: 1,
+                                    ),
+                                  ],
                                 ),
-                                child: const Icon(
-                                  CupertinoIcons.hourglass,
-                                  color: Colors.orange,
+                                child: Icon(
+                                  isLocked
+                                      ? CupertinoIcons.lock_shield_fill
+                                      : CupertinoIcons.lock_shield,
+                                  color: isLocked
+                                      ? Colors.red
+                                      : const Color(0xFF0ECB81),
                                   size: 22,
                                 ),
                               ),
@@ -1917,184 +1265,860 @@ class _UserDetailAdminPageState extends State<UserDetailAdminPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      (user['pendingPackage'] as Map)['name'] ??
-                                          'Package',
+                                      'Account Status',
                                       style: GoogleFonts.inter(
-                                        color: Colors.orange,
-                                        fontSize: 16,
+                                        color: Colors.white54,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      isLocked ? 'Locked' : 'Active',
+                                      style: GoogleFonts.inter(
+                                        color: isLocked
+                                            ? Colors.red
+                                            : const Color(0xFF0ECB81),
+                                        fontSize: 17,
                                         fontWeight: FontWeight.w800,
-                                        letterSpacing: -0.3,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '\$${(user['pendingPackage'] as Map)['min']}-\$${(user['pendingPackage'] as Map)['max']} • ${(user['pendingPackage'] as Map)['roi']}% ROI',
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white60,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      'Duration: ${(user['pendingPackage'] as Map)['durationDays']} days',
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white38,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
+                                        letterSpacing: -0.5,
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                              IconButton(
-                                onPressed: () => _deletePendingRequest(),
-                                icon: const Icon(
-                                  CupertinoIcons.trash_fill,
-                                  color: Colors.red,
-                                  size: 20,
-                                ),
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Colors.red.withOpacity(0.15),
-                                  padding: const EdgeInsets.all(10),
-                                  minimumSize: const Size(40, 40),
+                              Transform.scale(
+                                scale: 0.9,
+                                child: CupertinoSwitch(
+                                  value: !isLocked,
+                                  activeColor: const Color(0xFF0ECB81),
+                                  onChanged: (value) =>
+                                      _toggleAccountLock(!value),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 24),
-                      ],
 
-                      // Withdrawal Requests
-                      if (user['withdrawalRequest'] != null &&
-                          (user['withdrawalRequest'] as List).isNotEmpty) ...[
+                        const SizedBox(height: 24),
+
+                        // Wallet Section - Enhanced
                         _buildSectionHeader(
-                          'Withdrawal Requests',
-                          CupertinoIcons.arrow_up_right_circle_fill,
+                          'Wallet Management',
+                          CupertinoIcons.creditcard_fill,
                         ),
                         const SizedBox(height: 12),
-                        ...((user['withdrawalRequest'] as List)
-                            .asMap()
-                            .entries
-                            .map((entry) {
-                              final request = entry.value as Map;
-                              final statusColor = request['status'] == 'pending'
-                                  ? Colors.orange
-                                  : request['status'] == 'approved'
-                                  ? const Color(0xFF0ECB81)
-                                  : Colors.red;
-
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                padding: const EdgeInsets.all(18),
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                const Color(0xFFD4A017).withOpacity(0.2),
+                                const Color(0xFFD4A017).withOpacity(0.05),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: const Color(0xFFD4A017).withOpacity(0.4),
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFD4A017).withOpacity(0.1),
+                                blurRadius: 15,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: const Color(
+                                        0xFFD4A017,
+                                      ).withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Icon(
+                                      CupertinoIcons.money_dollar_circle_fill,
+                                      color: Color(0xFFD4A017),
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    'Current Balance',
+                                    style: GoogleFonts.inter(
+                                      color: Colors.white70,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                '\$${formatter.format(user['wallet'] ?? 0)}',
+                                style: GoogleFonts.inter(
+                                  color: const Color(0xFFD4A017),
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: -1.5,
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              Container(
                                 decoration: BoxDecoration(
                                   color: const Color(0xFF1A1A1A),
-                                  borderRadius: BorderRadius.circular(18),
+                                  borderRadius: BorderRadius.circular(14),
                                   border: Border.all(
-                                    color: statusColor.withOpacity(0.4),
-                                    width: 1.5,
+                                    color: Colors.white.withOpacity(0.1),
                                   ),
                                 ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        color: statusColor.withOpacity(0.15),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Icon(
-                                        CupertinoIcons.arrow_up_circle_fill,
-                                        color: statusColor,
-                                        size: 22,
-                                      ),
+                                child: TextField(
+                                  controller: _fundController,
+                                  keyboardType: TextInputType.number,
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: 'Enter new wallet balance',
+                                    hintStyle: GoogleFonts.inter(
+                                      color: Colors.white38,
                                     ),
-                                    const SizedBox(width: 14),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                    prefixIcon: const Icon(
+                                      CupertinoIcons.money_dollar,
+                                      color: Color(0xFFD4A017),
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.all(16),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: _updateWallet,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFD4A017),
+                                    foregroundColor: Colors.black,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        CupertinoIcons.checkmark_circle_fill,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Update Wallet',
+                                        style: GoogleFonts.inter(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Package Management - Enhanced
+                        _buildSectionHeader(
+                          'Package Management',
+                          CupertinoIcons.cube_box_fill,
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1A1A1A),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.blue.withOpacity(0.3),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Icon(
+                                      CupertinoIcons.cube_box_fill,
+                                      color: Colors.blue,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Current Package',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white54,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                      Text(
+                                        user['activePackage'] == 'none'
+                                            ? 'No Package'
+                                            : user['activePackage'] ?? 'N/A',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: -0.3,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.15),
+                                  ),
+                                ),
+                                child: DropdownButton<String>(
+                                  value: _selectedPackage,
+                                  hint: Text(
+                                    'Select new package',
+                                    style: GoogleFonts.inter(
+                                      color: Colors.white38,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  isExpanded: true,
+                                  dropdownColor: const Color(0xFF1A1A1A),
+                                  underline: const SizedBox(),
+                                  icon: const Icon(
+                                    CupertinoIcons.chevron_down,
+                                    color: Colors.white38,
+                                    size: 18,
+                                  ),
+                                  items: investmentPackages.map((package) {
+                                    return DropdownMenuItem<String>(
+                                      value: package['name'],
+                                      child: Row(
                                         children: [
-                                          Text(
-                                            '\$${request['amount']}',
-                                            style: GoogleFonts.inter(
-                                              color: Colors.white,
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w800,
-                                              letterSpacing: -0.5,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            _formatDateTime(
-                                              request['timestamp'],
-                                            ),
-                                            style: GoogleFonts.inter(
-                                              color: Colors.white54,
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 6),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 4,
-                                            ),
+                                            padding: const EdgeInsets.all(6),
                                             decoration: BoxDecoration(
-                                              color: statusColor.withOpacity(
-                                                0.15,
-                                              ),
+                                              color: _getPackageColor(
+                                                package['name'],
+                                              ).withOpacity(0.2),
                                               borderRadius:
                                                   BorderRadius.circular(8),
-                                              border: Border.all(
-                                                color: statusColor.withOpacity(
-                                                  0.3,
-                                                ),
+                                            ),
+                                            child: Icon(
+                                              CupertinoIcons.sparkles,
+                                              size: 12,
+                                              color: _getPackageColor(
+                                                package['name'],
                                               ),
                                             ),
-                                            child: Text(
-                                              request['status']
-                                                  .toString()
-                                                  .toUpperCase(),
-                                              style: GoogleFonts.inter(
-                                                color: statusColor,
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w700,
-                                                letterSpacing: 0.8,
-                                              ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  package['name'],
+                                                  style: GoogleFonts.inter(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  '\$${package['min']}-\$${package['max']} • ${package['roi']}% ROI',
+                                                  style: GoogleFonts.inter(
+                                                    color: Colors.white54,
+                                                    fontSize: 10,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],
                                       ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    setState(() => _selectedPackage = value);
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: _updatePackage,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
                                     ),
-                                    IconButton(
-                                      onPressed: () =>
-                                          _deleteWithdrawalRequest(entry.key),
-                                      icon: const Icon(
-                                        CupertinoIcons.trash_fill,
-                                        color: Colors.red,
-                                        size: 20,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        CupertinoIcons.arrow_2_squarepath,
+                                        size: 18,
                                       ),
-                                      style: IconButton.styleFrom(
-                                        backgroundColor: Colors.red.withOpacity(
-                                          0.15,
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Switch Package',
+                                        style: GoogleFonts.inter(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 15,
                                         ),
-                                        padding: const EdgeInsets.all(10),
-                                        minimumSize: const Size(40, 40),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // User Information - Collapsible
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _isUserInfoExpanded = !_isUserInfoExpanded;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.purple.withOpacity(0.15),
+                                  Colors.purple.withOpacity(0.05),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.purple.withOpacity(0.3),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.purple.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                    CupertinoIcons.person_crop_circle_fill,
+                                    color: Colors.purple,
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    'User Information',
+                                    style: GoogleFonts.inter(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: -0.5,
+                                    ),
+                                  ),
+                                ),
+                                AnimatedRotation(
+                                  turns: _isUserInfoExpanded ? 0.5 : 0,
+                                  duration: const Duration(milliseconds: 300),
+                                  child: const Icon(
+                                    CupertinoIcons.chevron_down,
+                                    color: Colors.purple,
+                                    size: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        AnimatedCrossFade(
+                          firstChild: const SizedBox(width: double.infinity),
+                          secondChild: Container(
+                            padding: const EdgeInsets.all(18),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1A1A1A),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.1),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    InkWell(
+                                      onTap: () => _showEditUserInfoDialog(),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(
+                                            0xFFD4A017,
+                                          ).withOpacity(0.15),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                          border: Border.all(
+                                            color: const Color(
+                                              0xFFD4A017,
+                                            ).withOpacity(0.3),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(
+                                              CupertinoIcons.pencil,
+                                              color: Color(0xFFD4A017),
+                                              size: 16,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              'Edit',
+                                              style: GoogleFonts.inter(
+                                                color: const Color(0xFFD4A017),
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              );
-                            })),
+                                const SizedBox(height: 12),
+                                _buildInfoRow(
+                                  icon: CupertinoIcons.person_fill,
+                                  label: 'Full Name',
+                                  value: user['fullname'] ?? 'N/A',
+                                ),
+                                _buildDivider(),
+                                _buildInfoRow(
+                                  icon: CupertinoIcons.mail_solid,
+                                  label: 'Email',
+                                  value: user['email'] ?? 'N/A',
+                                ),
+                                _buildDivider(),
+                                _buildInfoRow(
+                                  icon: CupertinoIcons.phone_fill,
+                                  label: 'Phone',
+                                  value: user['phone'] ?? 'N/A',
+                                ),
+                                _buildDivider(),
+                                _buildInfoRow(
+                                  icon: CupertinoIcons.location_solid,
+                                  label: 'Address',
+                                  value: user['address'] ?? 'N/A',
+                                ),
+                                _buildDivider(),
+                                _buildInfoRow(
+                                  icon: CupertinoIcons.location_solid,
+                                  label: 'Password',
+                                  value: user['password'] ?? 'N/A',
+                                ),
+                                _buildDivider(),
+                                _buildInfoRow(
+                                  icon: CupertinoIcons.location_solid,
+                                  label: 'Package Duration of Days',
+                                  value: user['duration'].toString() ?? 'N/A',
+                                ),
+                                _buildDivider(),
+                                _buildInfoRow(
+                                  icon: CupertinoIcons.flag_fill,
+                                  label: 'Country',
+                                  value: user['country'] ?? 'N/A',
+                                ),
+                                _buildDivider(),
+                                _buildInfoRow(
+                                  icon: CupertinoIcons.calendar,
+                                  label: 'Joined',
+                                  value: _formatDateTime(user['createdAt']),
+                                ),
+                                if (user['career'] != null) ...[
+                                  _buildDivider(),
+                                  _buildInfoRow(
+                                    icon:
+                                        CupertinoIcons.money_dollar_circle_fill,
+                                    label: 'Career',
+                                    value: (user['career'] ?? '').toString(),
+                                    valueColor: Colors.deepPurple,
+                                  ),
+                                ],
+
+                                if (user['numberOfRounds'] != null) ...[
+                                  _buildDivider(),
+                                  _buildInfoRow(
+                                    icon:
+                                        CupertinoIcons.money_dollar_circle_fill,
+                                    label:
+                                        'Nunmber of Rounds Gone Since investment',
+                                    value: (user['numberOfRounds'] ?? 0)
+                                        .toString(),
+                                    valueColor: Colors.deepPurple,
+                                  ),
+                                ],
+                                _buildDivider(),
+                                _buildInfoRow(
+                                  icon: CupertinoIcons.chart_bar_fill,
+                                  label: 'Total Earnings',
+                                  value:
+                                      '\$${(user['totalEarnings'] ?? 0).toStringAsFixed(2)}',
+                                  valueColor: const Color(0xFF0ECB81),
+                                ),
+                                _buildDivider(),
+                                _buildInfoRow(
+                                  icon: CupertinoIcons.money_dollar_circle_fill,
+                                  label: 'Investment Amount',
+                                  value:
+                                      '\$${(user['investmentAmount'] ?? 0).toStringAsFixed(2)}',
+                                  valueColor: Colors.blue,
+                                ),
+                                if (user['usdtAddress'] != null) ...[
+                                  _buildDivider(),
+                                  _buildInfoRow(
+                                    icon:
+                                        CupertinoIcons.money_dollar_circle_fill,
+                                    label: 'USDT Wallet Address',
+                                    value: (user['usdtAddress'] ?? 0)
+                                        .toString(),
+                                    valueColor: Colors.deepPurple,
+                                  ),
+                                ],
+                                if (user['nextPayoutDate'] != null) ...[
+                                  _buildDivider(),
+                                  _buildInfoRow(
+                                    icon: CupertinoIcons.calendar_today,
+                                    label: 'Next Payout',
+                                    value: _formatDateTime(
+                                      user['nextPayoutDate'],
+                                    ),
+                                    valueColor: Colors.orange,
+                                  ),
+                                ],
+                                if (user['kickStartFee'] != null &&
+                                    user['kickStartFee'] > 0) ...[
+                                  _buildDivider(),
+                                  _buildInfoRow(
+                                    icon: CupertinoIcons.flame_fill,
+                                    label: 'Kickstart Fee',
+                                    value:
+                                        '\$${(user['kickStartFee'] ?? 0).toStringAsFixed(2)}',
+                                    valueColor: Colors.red,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          crossFadeState: _isUserInfoExpanded
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          duration: const Duration(milliseconds: 300),
+                        ),
+
                         const SizedBox(height: 24),
+
+                        TransactionHistorySection(userId: widget.userId),
+
+                        // Pending Package
+                        if (user['pendingPackage'] != null) ...[
+                          _buildSectionHeader(
+                            'Pending Package',
+                            CupertinoIcons.hourglass,
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            padding: const EdgeInsets.all(18),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.orange.withOpacity(0.2),
+                                  Colors.orange.withOpacity(0.05),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.orange.withOpacity(0.4),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orange.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                    CupertinoIcons.hourglass,
+                                    color: Colors.orange,
+                                    size: 22,
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        (user['pendingPackage']
+                                                as Map)['name'] ??
+                                            'Package',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.orange,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: -0.3,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '\$${(user['pendingPackage'] as Map)['min']}-\$${(user['pendingPackage'] as Map)['max']} • ${(user['pendingPackage'] as Map)['roi']}% ROI',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white60,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'Duration: ${(user['pendingPackage'] as Map)['durationDays']} days',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white38,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () => _deletePendingRequest(),
+                                  icon: const Icon(
+                                    CupertinoIcons.trash_fill,
+                                    color: Colors.red,
+                                    size: 20,
+                                  ),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.red.withOpacity(
+                                      0.15,
+                                    ),
+                                    padding: const EdgeInsets.all(10),
+                                    minimumSize: const Size(40, 40),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+
+                        // Withdrawal Requests
+                        if (user['withdrawalRequest'] != null &&
+                            (user['withdrawalRequest'] as List).isNotEmpty) ...[
+                          _buildSectionHeader(
+                            'Withdrawal Requests',
+                            CupertinoIcons.arrow_up_right_circle_fill,
+                          ),
+                          const SizedBox(height: 12),
+                          ...((user['withdrawalRequest'] as List)
+                              .asMap()
+                              .entries
+                              .map((entry) {
+                                final request = entry.value as Map;
+                                final statusColor =
+                                    request['status'] == 'pending'
+                                    ? Colors.orange
+                                    : request['status'] == 'approved'
+                                    ? const Color(0xFF0ECB81)
+                                    : Colors.red;
+
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  padding: const EdgeInsets.all(18),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF1A1A1A),
+                                    borderRadius: BorderRadius.circular(18),
+                                    border: Border.all(
+                                      color: statusColor.withOpacity(0.4),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: statusColor.withOpacity(0.15),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          CupertinoIcons.arrow_up_circle_fill,
+                                          color: statusColor,
+                                          size: 22,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 14),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '\$${request['amount']}',
+                                              style: GoogleFonts.inter(
+                                                color: Colors.white,
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w800,
+                                                letterSpacing: -0.5,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              _formatDateTime(
+                                                request['timestamp'],
+                                              ),
+                                              style: GoogleFonts.inter(
+                                                color: Colors.white54,
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 10,
+                                                    vertical: 4,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: statusColor.withOpacity(
+                                                  0.15,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  color: statusColor
+                                                      .withOpacity(0.3),
+                                                ),
+                                              ),
+                                              child: Text(
+                                                request['status']
+                                                    .toString()
+                                                    .toUpperCase(),
+                                                style: GoogleFonts.inter(
+                                                  color: statusColor,
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w700,
+                                                  letterSpacing: 0.8,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () =>
+                                            _deleteWithdrawalRequest(entry.key),
+                                        icon: const Icon(
+                                          CupertinoIcons.trash_fill,
+                                          color: Colors.red,
+                                          size: 20,
+                                        ),
+                                        style: IconButton.styleFrom(
+                                          backgroundColor: Colors.red
+                                              .withOpacity(0.15),
+                                          padding: const EdgeInsets.all(10),
+                                          minimumSize: const Size(40, 40),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              })),
+                          const SizedBox(height: 24),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 

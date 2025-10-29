@@ -41,31 +41,9 @@ class _LoginPageState extends State<LoginPage> {
         password: pass,
         context: context,
       );
-      // if (user != null) {
-      //   final userDoc = await AuthService.getUserDoc(user.uid);
-      //   final photo = userDoc?['photoUrl'] as String?;
-      //   if (photo == null || photo.isEmpty) {
-      //     // go to photo upload
-      //     Navigator.pushReplacement(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (context) {
-      //           return ProfilePhotoPage(uid: user.uid);
-      //         },
-      //       ),
-      //     );
-      //   } else {
-      //     // go to dashboard
-      //   }
-      // }
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return AuthState();
-          },
-        ),
-      );
+      // if (user != null) {}
+
+      // https://res.cloudinary.com/dy523yrlh/image/upload/v1761765933/egwfyklbxr87lhnlrpup.png
     } on FirebaseAuthException catch (e) {
       Get.snackbar(
         'Login error',

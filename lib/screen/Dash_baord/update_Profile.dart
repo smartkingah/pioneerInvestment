@@ -118,6 +118,11 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+    final isTablet = screenWidth >= 600 && screenWidth < 1024;
+    final isDesktop = screenWidth >= 1024;
+
     ImageProvider? imageProvider;
     if (kIsWeb && _webImage != null) {
       imageProvider = MemoryImage(_webImage!);
@@ -158,249 +163,323 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            // Profile Picture Section
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 32),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [const Color(0xFF0A0A0A), const Color(0xFF111111)],
-                ),
-              ),
-              child: Column(
-                children: [
-                  Stack(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: isDesktop ? 1000 : double.infinity,
+          ),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: [
+                // Profile Picture Section
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(vertical: isMobile ? 32 : 48),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        const Color(0xFF0A0A0A),
+                        const Color(0xFF111111),
+                      ],
+                    ),
+                  ),
+                  child: Column(
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFFFFD400).withOpacity(0.3),
-                              blurRadius: 20,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: CircleAvatar(
-                          radius: 60,
-                          backgroundColor: Colors.grey[800],
-                          backgroundImage: imageProvider,
-                          child: imageProvider == null
-                              ? const Icon(
-                                  CupertinoIcons.person_fill,
-                                  size: 50,
-                                  color: Colors.white38,
-                                )
-                              : null,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: GestureDetector(
-                          onTap: _pickFile,
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
+                      Stack(
+                        children: [
+                          Container(
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFFD400),
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
+                                  color: const Color(
+                                    0xFFD4A017,
+                                  ).withOpacity(0.3),
+                                  blurRadius: 20,
+                                  spreadRadius: 2,
                                 ),
                               ],
                             ),
-                            child: const Icon(
-                              CupertinoIcons.camera_fill,
-                              size: 20,
-                              color: Colors.black,
+                            child: CircleAvatar(
+                              radius: isMobile ? 60 : 80,
+                              backgroundColor: Colors.grey[800],
+                              backgroundImage: imageProvider,
+                              child: imageProvider == null
+                                  ? Icon(
+                                      CupertinoIcons.person_fill,
+                                      size: isMobile ? 50 : 70,
+                                      color: Colors.white38,
+                                    )
+                                  : null,
                             ),
                           ),
-                        ),
-                      ),
-                      if (_uploading)
-                        Positioned.fill(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.5),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Center(
-                              child: CircularProgressIndicator(
-                                strokeWidth: 3,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Color(0xFFFFD400),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: _pickFile,
+                              child: Container(
+                                padding: EdgeInsets.all(isMobile ? 12 : 14),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFD4A017),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  CupertinoIcons.camera_fill,
+                                  size: isMobile ? 20 : 24,
+                                  color: Colors.white,
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Tap to change photo',
-                    style: GoogleFonts.inter(
-                      color: Colors.white54,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Form Section
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Personal Information',
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.3,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  _buildModernTextField(
-                    controller: _fullNameController,
-                    label: 'Full Name',
-                    icon: CupertinoIcons.person,
-                    hint: 'Enter your full name',
-                  ),
-                  const SizedBox(height: 16),
-
-                  _buildModernTextField(
-                    controller: _phoneController,
-                    label: 'Phone Number',
-                    icon: CupertinoIcons.phone,
-                    hint: 'Enter your phone number',
-                    keyboardType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: 16),
-
-                  _buildModernTextField(
-                    controller: _careerController,
-                    label: 'Current Job/Career',
-                    icon: CupertinoIcons.briefcase,
-                    hint: 'Enter your profession',
-                  ),
-                  const SizedBox(height: 16),
-
-                  _buildModernTextField(
-                    controller: _addressController,
-                    label: 'Address',
-                    icon: CupertinoIcons.location,
-                    hint: 'Enter your address',
-                    maxLines: 2,
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  Text(
-                    'Financial Information',
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.3,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  _buildModernTextField(
-                    controller: _usdtAddressController,
-                    label: 'USDT Wallet Address',
-                    icon: CupertinoIcons.money_dollar_circle,
-                    hint: 'Enter your USDT address',
-                    suffixIcon: CupertinoIcons.qrcode,
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Update Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: _uploading ? null : _updateProfile,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFFD400),
-                        disabledBackgroundColor: const Color(
-                          0xFFFFD400,
-                        ).withOpacity(0.5),
-                        foregroundColor: Colors.black,
-                        elevation: 0,
-                        shadowColor: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: _uploading
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const SizedBox(
-                                  width: 20,
-                                  height: 20,
+                          if (_uploading)
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.5),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
                                   child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
+                                    strokeWidth: 3,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.black,
+                                      Color(0xFFD4A017),
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  'Updating...',
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  CupertinoIcons.check_mark_circled_solid,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Update Profile',
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                    ),
+                        ],
+                      ),
+                      SizedBox(height: isMobile ? 16 : 20),
+                      Text(
+                        'Tap to change photo',
+                        style: GoogleFonts.inter(
+                          color: Colors.white54,
+                          fontSize: isMobile ? 13 : 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                  referralCodeWidget(),
-                  const SizedBox(height: 32),
-                ],
-              ),
+                ),
+
+                // Form Section
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isMobile
+                        ? 20
+                        : (screenWidth > 1200 ? screenWidth * 0.15 : 60),
+                    vertical: 20,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Personal Information',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: isMobile ? 16 : 20,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                      SizedBox(height: isMobile ? 20 : 28),
+
+                      // Desktop: Two column layout
+                      if (isDesktop) ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildModernTextField(
+                                controller: _fullNameController,
+                                label: 'Full Name',
+                                icon: CupertinoIcons.person,
+                                hint: 'Enter your full name',
+                                isMobile: false,
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: _buildModernTextField(
+                                controller: _phoneController,
+                                label: 'Phone Number',
+                                icon: CupertinoIcons.phone,
+                                hint: 'Enter your phone number',
+                                keyboardType: TextInputType.phone,
+                                isMobile: false,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildModernTextField(
+                                controller: _careerController,
+                                label: 'Current Job/Career',
+                                icon: CupertinoIcons.briefcase,
+                                hint: 'Enter your profession',
+                                isMobile: false,
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: _buildModernTextField(
+                                controller: _addressController,
+                                label: 'Address',
+                                icon: CupertinoIcons.location,
+                                hint: 'Enter your address',
+                                maxLines: 2,
+                                isMobile: false,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ] else ...[
+                        // Mobile/Tablet: Single column layout
+                        _buildModernTextField(
+                          controller: _fullNameController,
+                          label: 'Full Name',
+                          icon: CupertinoIcons.person,
+                          hint: 'Enter your full name',
+                          isMobile: isMobile,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildModernTextField(
+                          controller: _phoneController,
+                          label: 'Phone Number',
+                          icon: CupertinoIcons.phone,
+                          hint: 'Enter your phone number',
+                          keyboardType: TextInputType.phone,
+                          isMobile: isMobile,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildModernTextField(
+                          controller: _careerController,
+                          label: 'Current Job/Career',
+                          icon: CupertinoIcons.briefcase,
+                          hint: 'Enter your profession',
+                          isMobile: isMobile,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildModernTextField(
+                          controller: _addressController,
+                          label: 'Address',
+                          icon: CupertinoIcons.location,
+                          hint: 'Enter your address',
+                          maxLines: 2,
+                          isMobile: isMobile,
+                        ),
+                      ],
+
+                      SizedBox(height: isMobile ? 32 : 40),
+
+                      Text(
+                        'Financial Information',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: isMobile ? 16 : 20,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                      SizedBox(height: isMobile ? 20 : 28),
+
+                      _buildModernTextField(
+                        controller: _usdtAddressController,
+                        label: 'USDT Wallet Address',
+                        icon: CupertinoIcons.money_dollar_circle,
+                        hint: 'Enter your USDT address',
+                        suffixIcon: CupertinoIcons.qrcode,
+                        isMobile: isMobile,
+                      ),
+
+                      SizedBox(height: isMobile ? 32 : 40),
+
+                      // Update Button
+                      SizedBox(
+                        width: double.infinity,
+                        height: isMobile ? 56 : 64,
+                        child: ElevatedButton(
+                          onPressed: _uploading ? null : _updateProfile,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFD4A017),
+                            disabledBackgroundColor: const Color(
+                              0xFFD4A017,
+                            ).withOpacity(0.5),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: _uploading
+                              ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: isMobile ? 20 : 24,
+                                      height: isMobile ? 20 : 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Colors.white,
+                                            ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      'Updating...',
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: isMobile ? 16 : 18,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      CupertinoIcons.check_mark_circled_solid,
+                                      size: isMobile ? 20 : 24,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Update Profile',
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: isMobile ? 16 : 18,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      referralCodeWidget(),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -411,6 +490,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     required String label,
     required IconData icon,
     required String hint,
+    required bool isMobile,
     TextInputType? keyboardType,
     int maxLines = 1,
     IconData? suffixIcon,
@@ -420,12 +500,16 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       children: [
         Row(
           children: [
-            Icon(icon, size: 16, color: const Color(0xFFFFD400)),
+            Icon(
+              icon,
+              size: isMobile ? 16 : 18,
+              color: const Color(0xFFD4A017),
+            ),
             const SizedBox(width: 8),
             Text(
               label,
               style: GoogleFonts.inter(
-                fontSize: 14,
+                fontSize: isMobile ? 14 : 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
                 letterSpacing: -0.2,
@@ -456,14 +540,21 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
             maxLines: maxLines,
             style: GoogleFonts.inter(
               color: Colors.white,
-              fontSize: 15,
+              fontSize: isMobile ? 15 : 16,
               fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.inter(color: Colors.white38, fontSize: 15),
+              hintStyle: GoogleFonts.inter(
+                color: Colors.white38,
+                fontSize: isMobile ? 15 : 16,
+              ),
               suffixIcon: suffixIcon != null
-                  ? Icon(suffixIcon, color: Colors.white38, size: 20)
+                  ? Icon(
+                      suffixIcon,
+                      color: Colors.white38,
+                      size: isMobile ? 20 : 22,
+                    )
                   : null,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -476,13 +567,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: const BorderSide(
-                  color: Color(0xFFFFD400),
+                  color: Color(0xFFD4A017),
                   width: 2,
                 ),
               ),
               contentPadding: EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: maxLines > 1 ? 16 : 18,
+                horizontal: isMobile ? 20 : 24,
+                vertical: maxLines > 1 ? 16 : (isMobile ? 18 : 20),
               ),
               filled: true,
               fillColor: Colors.transparent,
