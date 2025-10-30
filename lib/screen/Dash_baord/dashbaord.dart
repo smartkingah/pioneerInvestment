@@ -424,7 +424,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
   }
 
   Widget mainContent({isMobile, screenWidth, data, context}) {
-    final formatter = NumberFormat("#,##0", "en_US");
+    final formatter = NumberFormat("#,##0.00", "en_US");
     List withdrawalRequests = List.from(data['withdrawalRequest'] ?? []);
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
@@ -499,9 +499,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            formatCurrencyFromString(
-                              "\$${formatter.format(data['wallet'])}",
-                            ),
+                            "\$${formatter.format(data['wallet'])}",
                             style: GoogleFonts.inter(
                               fontSize: 32,
                               color: Colors.white,
@@ -701,8 +699,9 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                                 bool isPending = ((withdrawalRequests).any(
                                   (req) => req['status'] == 'pending',
                                 ));
-
-                                isPending
+                                data["activePackage"] == "none" && isPending
+                                    ? _showPackageSelectionDialog(context)
+                                    : isPending
                                     ? AuthService().showWarningSnackBar(
                                         context,
                                         'Pending Withdrawal Request',
@@ -803,51 +802,10 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
 
           const SizedBox(height: 24),
 
-          LiveBTCChart(),
-
-          const SizedBox(height: 24),
-          Text(
-            "Active Investment",
-            style: GoogleFonts.inter(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 18),
-          // QUICK STATS - Horizontal Cards
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatCard(
-                  "Daily Growth",
-                  "+\$${formatter.format(data['dailyGrowth'])}",
-                  const Color(0xFF0ECB81),
-                  Icons.trending_up,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  "Total Earnings",
-                  "\$${formatter.format(data['totalEarnings'])}",
-                  Colors.white,
-                  Icons.account_balance_wallet_outlined,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  "Active Package",
-                  data['activePackage'],
-                  const Color(0xFFD4A017),
-                  Icons.workspace_premium_outlined,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 24),
+          ///reinvest pro tip
+          (activePackageData == 'Californium' && data['wallet'] >= 500000)
+              ? congratulationsCard()
+              : SizedBox(),
 
           ///active package
           if (_pendingPackage != null) ...[
@@ -1001,11 +959,6 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
             const SizedBox(height: 24),
           ],
 
-          ///reinvest pro tip
-          (activePackageData == 'Californium' && data['wallet'] >= 500000)
-              ? congratulationsCard()
-              : reinvestProTip(),
-
           ///show activation widget
           data['activePackage'] == "none"
               ? SizedBox()
@@ -1015,6 +968,9 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                     data['wallet'] == 0 &&
                     numberOfRoundsData < 1)
               ? SizedBox()
+              // :
+              // (activePackageData == 'Bronze' && data['wallet'] == 0)
+              // ? SizedBox()
               : data['lockedActivation'] == false
               ? ActiveInvestmentCard()
               : data['activePackage'] != "none"
@@ -1022,12 +978,57 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                   usdtWalletAddress: usdtWalletAddress,
                   packageName: activePackageData,
                   subTitle:
-                      activePackageData == 'Bronze' && numberOfRoundsData >= 5
+                      data['activePackage'] == 'Bronze' &&
+                          data['numberOfRounds'] >= 5
                       ? 'You have exceeded your limit on the Bronze Plan, Proceed by funding your account to upgrade your portfolio! Contact Support for more details'
                       : "You have hit the Maximum investment amount for this plan! Please pay a Kick Start Fee of \$${data['kickStartFee'] ?? ''} to continue with your investment!",
                   data: data,
                 )
               : SizedBox(),
+          const SizedBox(height: 24),
+
+          Text(
+            "Active Investment",
+            style: GoogleFonts.inter(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 18),
+          // QUICK STATS - Horizontal Cards
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  "Daily Growth",
+                  "+\$${formatter.format(data['dailyGrowth'])}",
+                  const Color(0xFF0ECB81),
+                  Icons.trending_up,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildStatCard(
+                  "Total Earnings",
+                  "\$${formatter.format(data['totalEarnings'])}",
+                  Colors.white,
+                  Icons.account_balance_wallet_outlined,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildStatCard(
+                  "Active Package",
+                  data['activePackage'],
+                  const Color(0xFFD4A017),
+                  Icons.workspace_premium_outlined,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          LiveBTCChart(),
 
           // // PACKAGES SECTION - Compact
           // StatefulBuilder(

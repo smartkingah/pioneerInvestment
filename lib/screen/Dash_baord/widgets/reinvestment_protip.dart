@@ -98,6 +98,7 @@ Widget reinvestProTip() {
                 ],
               ),
               const SizedBox(height: 8),
+
               RichText(
                 text: TextSpan(
                   style: GoogleFonts.inter(

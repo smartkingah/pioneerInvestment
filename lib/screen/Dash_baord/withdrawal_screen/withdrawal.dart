@@ -685,6 +685,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
           .collection('users')
           .doc(user!.uid)
           .update({
+            "activePackage": 'none',
             'withdrawalRequest': FieldValue.arrayUnion([
               {
                 'amount': _usdController.text,

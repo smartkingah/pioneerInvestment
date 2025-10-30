@@ -60,7 +60,7 @@ class _ActiveInvestmentCardState extends State<ActiveInvestmentCard> {
         _activeData = data;
         _remainingTime = remaining.isNegative ? Duration.zero : remaining;
       });
-
+      _triggerPayout();
       _startCountdown();
     }
   }
@@ -105,11 +105,12 @@ class _ActiveInvestmentCardState extends State<ActiveInvestmentCard> {
       final profit = investAmount * packageRoi;
 
       // Add payout to wallet
-      final newWallet = wallet + profit;
+      final newWallet = investAmount + profit;
+      final totalEarnings = data['totalEarnings'] + profit;
 
       await userRef.update({
         'wallet': newWallet,
-        'totalEarnings': data['totalEarnings'] + profit,
+        'totalEarnings': wallet,
 
         // 'lastInvestmentDate': DateTime.now().toIso8601String(),
         // 'nextPayoutDate': nextPayout.toIso8601String(),
@@ -142,11 +143,13 @@ class _ActiveInvestmentCardState extends State<ActiveInvestmentCard> {
       final data = snap.data()!;
       final numberOfRounds = data['numberOfRounds'] ?? {};
       final duration = data['duration'] ?? {};
-
+      final wallet = double.tryParse(data['wallet'].toString()) ?? 0.0;
       // New payout date (e.g., next day)
       final nextPayout = DateTime.now().add(Duration(days: duration));
 
       await userRef.update({
+        "investmentAmount": wallet,
+        'wallet': 0,
         'lastInvestmentDate': DateTime.now().toIso8601String(),
         'nextPayoutDate': nextPayout.toIso8601String(),
         'numberOfRounds': numberOfRounds + 1,
@@ -278,8 +281,8 @@ class _ActiveInvestmentCardState extends State<ActiveInvestmentCard> {
 
                         _reactivatePackage().then((value) async {
                           // Refresh UI
-                          _fetchActivePackage();
-                          await _triggerPayout(); // ✅ Automatically trigger payout
+                          // _fetchActivePackage();
+                          // await _triggerPayout(); // ✅ Automatically trigger payout
                           AuthService().showSuccessSnackBar(
                             context: context,
                             title: "✅ Package reactivated successfully.",
