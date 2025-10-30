@@ -60,8 +60,15 @@ class _ActiveInvestmentCardState extends State<ActiveInvestmentCard> {
         _activeData = data;
         _remainingTime = remaining.isNegative ? Duration.zero : remaining;
       });
-      _triggerPayout();
+      // ✅ Check if already expired when app opens
+      if (remaining.isNegative || remaining == Duration.zero) {
+        await _triggerPayout(); // Handle expired investments
+      }
+
       _startCountdown();
+      // if (remaining.isNegative || remaining == Duration.zero) {
+      //   await _triggerPayout();
+      // }
     }
   }
 
@@ -153,6 +160,13 @@ class _ActiveInvestmentCardState extends State<ActiveInvestmentCard> {
         'lastInvestmentDate': DateTime.now().toIso8601String(),
         'nextPayoutDate': nextPayout.toIso8601String(),
         'numberOfRounds': numberOfRounds + 1,
+      });
+
+      await userRef.collection('transactions').add({
+        'type': 'Investment Reactivation',
+        'amount': wallet,
+        'status': 'Completed',
+        'timestamp': FieldValue.serverTimestamp(),
       });
 
       setState(() {

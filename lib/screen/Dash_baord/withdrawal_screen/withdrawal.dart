@@ -652,7 +652,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                'Need to deposit ETH for gas fees? Tap here',
+                                'Need to deposit USDT for gas fees? Tap here',
                                 style: TextStyle(
                                   color: Colors.blue.shade200,
                                   fontSize: 13,
