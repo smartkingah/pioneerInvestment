@@ -484,6 +484,7 @@ class ReactivationLockedWidget extends StatelessWidget {
               ),
             ),
           ),
+
           SizedBox(height: 12),
 
           // 🕒 contact support

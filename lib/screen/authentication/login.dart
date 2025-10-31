@@ -26,11 +26,12 @@ class _LoginPageState extends State<LoginPage> {
     final email = _emailCtrl.text.trim();
     final pass = _passCtrl.text.trim();
     if (email.isEmpty || pass.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Enter email and password',
-        snackPosition: SnackPosition.BOTTOM,
+      AuthService().showErrorSnackBar(
+        context: context,
+        title: 'Error',
+        subTitle: 'Enter email and password',
       );
+
       return;
     }
 
@@ -45,10 +46,10 @@ class _LoginPageState extends State<LoginPage> {
 
       // https://res.cloudinary.com/dy523yrlh/image/upload/v1761765933/egwfyklbxr87lhnlrpup.png
     } on FirebaseAuthException catch (e) {
-      Get.snackbar(
-        'Login error',
-        e.message ?? e.code,
-        snackPosition: SnackPosition.BOTTOM,
+      AuthService().showErrorSnackBar(
+        context: context,
+        title: 'Login error',
+        subTitle: e.message ?? e.code,
       );
     } finally {
       setState(() => _loading = false);

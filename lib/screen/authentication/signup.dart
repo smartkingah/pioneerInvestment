@@ -43,20 +43,21 @@ class _SignupPageState extends State<SignupPage> {
         country.isEmpty ||
         phone.isEmpty ||
         confirm.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please fill all required fields',
-        snackPosition: SnackPosition.BOTTOM,
+      AuthService().showErrorSnackBar(
+        context: context,
+        title: 'Error',
+        subTitle: 'Please fill all required fields',
       );
       return;
     }
 
     if (password != confirm) {
-      Get.snackbar(
-        'Error',
-        'Passwords do not match',
-        snackPosition: SnackPosition.BOTTOM,
+      AuthService().showErrorSnackBar(
+        context: context,
+        title: 'Error',
+        subTitle: 'Passwords do not match',
       );
+
       return;
     }
 
@@ -83,10 +84,10 @@ class _SignupPageState extends State<SignupPage> {
         );
       }
     } catch (e) {
-      Get.snackbar(
-        'Signup Error',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
+      AuthService().showErrorSnackBar(
+        context: context,
+        title: 'Signup Error',
+        subTitle: e.toString(),
       );
     } finally {
       setState(() => _loading = false);

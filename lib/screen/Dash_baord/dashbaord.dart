@@ -334,6 +334,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             AdminButton(),
             const SizedBox(height: 12),
@@ -342,6 +343,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
               elevation: 2,
               onPressed: () {
                 showLogoutDialog();
+                // AuthService().showInfoSnackBar(context, "Testing", "Phase");
               },
               child: const Icon(
                 Icons.logout_outlined,

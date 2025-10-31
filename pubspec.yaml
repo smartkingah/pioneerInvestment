@@ -77,6 +77,7 @@ dependencies:
   shimmer: ^3.0.0
   draggable_float_widget: ^0.1.0
   pretty_date_time: ^0.0.3
+  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -94,6 +95,13 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+# flutter_native_splash:
+#   color: "#ffffff"        # Background color (white or your brand color)
+#   image: web/assets/logo.png  # Path to your logo
+#   web: true               # Enable for web only
+#   android: false
+#   ios: false
+
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

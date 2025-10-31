@@ -564,7 +564,7 @@ class AuthService {
           ),
         ),
         backgroundColor: const Color(0xFF1C1C1E),
-        behavior: SnackBarBehavior.floating,
+        behavior: SnackBarBehavior.floating, // ✅ safer for web
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: const BorderSide(color: Color(0xFFD4A017), width: 1),
