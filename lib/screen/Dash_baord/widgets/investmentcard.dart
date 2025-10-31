@@ -123,12 +123,12 @@ class _ActiveInvestmentCardState extends State<ActiveInvestmentCard> {
         // 'nextPayoutDate': nextPayout.toIso8601String(),
       });
       wallet == 0
-          ? null
-          : AuthService().showSuccessSnackBar(
+          ? AuthService().showSuccessSnackBar(
               context: context,
               title: "✅ Automatic payout of \$$profit added.",
               subTitle: " Next payout scheduled.",
-            );
+            )
+          : null;
       setState(() {
         profitData = profit;
       });
