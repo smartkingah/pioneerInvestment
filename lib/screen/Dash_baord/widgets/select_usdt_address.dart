@@ -10,6 +10,7 @@ import 'package:investmentpro/Services/email_service.dart';
 void showAmountInputDialog(
   BuildContext context,
   String usdtWalletAddress,
+  String btcWalletAddress, // Add BTC wallet
   Map<String, dynamic> selectedPackage,
   dynamic? data,
 ) {
@@ -165,9 +166,6 @@ void showAmountInputDialog(
                     } else if (amount < selectedPackage['min']) {
                       return 'Minimum amount is \$${selectedPackage['min']}';
                     }
-                    // if (amount > selectedPackage['max']) {
-                    //   return 'Maximum amount is \$${selectedPackage['max']}';
-                    // }
                     return null;
                   },
                 ),
@@ -191,10 +189,11 @@ void showAmountInputDialog(
                         final amount = double.parse(amountController.text);
                         Navigator.pop(context);
 
-                        // Show fund wallet dialog with amount
-                        showFundWalletDialog(
+                        // Show payment method selection
+                        showPaymentMethodDialog(
                           context,
                           usdtWalletAddress,
+                          btcWalletAddress,
                           amount,
                           selectedPackage,
                         );
@@ -233,12 +232,399 @@ void showAmountInputDialog(
   );
 }
 
-// STEP 2: Show Fund Wallet Dialog (with amount)
-void showFundWalletDialog(
+// STEP 2: Show Payment Method Selection Dialog
+void showPaymentMethodDialog(
   BuildContext context,
   String usdtWalletAddress,
+  String btcWalletAddress,
   double amount,
   Map<String, dynamic> selectedPackage,
+) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return Dialog(
+        backgroundColor: const Color(0xFF1C1C1E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Icon
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD4A017).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.account_balance_wallet_outlined,
+                  color: Color(0xFFD4A017),
+                  size: 34,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              Text(
+                "Select Payment Method",
+                style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              Text(
+                "Choose your preferred cryptocurrency",
+                style: GoogleFonts.inter(color: Colors.white60, fontSize: 13),
+              ),
+              const SizedBox(height: 24),
+
+              // USDT Option
+              _PaymentMethodButton(
+                icon: Icons.currency_bitcoin,
+                title: "USDT (TRC20)",
+                subtitle: "No additional charges",
+                color: const Color(0xFF26A17B),
+                onTap: () {
+                  Navigator.pop(context);
+                  showFundWalletDialog(
+                    context,
+                    usdtWalletAddress,
+                    amount,
+                    selectedPackage,
+                    'USDT',
+                    false,
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // BTC Option
+              _PaymentMethodButton(
+                icon: Icons.currency_bitcoin_rounded,
+                title: "Bitcoin (BTC)",
+                subtitle: "Network fees apply",
+                color: const Color(0xFFF7931A),
+                showWarning: true,
+                onTap: () {
+                  Navigator.pop(context);
+                  showBTCChargeWarningDialog(
+                    context,
+                    btcWalletAddress,
+                    amount,
+                    selectedPackage,
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+
+              // Cancel Button
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  "Cancel",
+                  style: GoogleFonts.inter(
+                    color: Colors.white60,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+// Payment Method Button Widget
+class _PaymentMethodButton extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+  final bool showWarning;
+  final VoidCallback onTap;
+
+  const _PaymentMethodButton({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.color,
+    this.showWarning = false,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFF2C2C2E),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFF3A3A3C), width: 1),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        if (showWarning)
+                          Icon(
+                            Icons.warning_amber_rounded,
+                            color: Colors.orange.shade400,
+                            size: 14,
+                          ),
+                        if (showWarning) const SizedBox(width: 4),
+                        Text(
+                          subtitle,
+                          style: GoogleFonts.inter(
+                            color: showWarning
+                                ? Colors.orange.shade400
+                                : Colors.white60,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Colors.white38,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// STEP 3: Show BTC Charge Warning Dialog
+void showBTCChargeWarningDialog(
+  BuildContext context,
+  String btcWalletAddress,
+  double amount,
+  Map<String, dynamic> selectedPackage,
+) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return Dialog(
+        backgroundColor: const Color(0xFF1C1C1E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Warning Icon
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.orange,
+                  size: 36,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              Text(
+                "Bitcoin Network Fees",
+                style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.info_outline_rounded,
+                          color: Colors.orange,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            "Important Notice",
+                            style: GoogleFonts.inter(
+                              color: Colors.orange,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      "When paying with Bitcoin, you are responsible for all network transaction fees (miner fees). These fees are separate from your investment amount and vary based on network congestion.",
+                      style: GoogleFonts.inter(
+                        color: Colors.white70,
+                        fontSize: 13,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Important Points
+              _InfoRow(
+                icon: Icons.check_circle_outline,
+                text: "You must cover the BTC network fees",
+              ),
+              const SizedBox(height: 8),
+              _InfoRow(
+                icon: Icons.check_circle_outline,
+                text: "Ensure sufficient balance for fees",
+              ),
+              const SizedBox(height: 8),
+              _InfoRow(
+                icon: Icons.check_circle_outline,
+                text: "Network fees are non-refundable",
+              ),
+
+              const SizedBox(height: 24),
+
+              // Proceed Button
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFD4A017),
+                  foregroundColor: Colors.black,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  showFundWalletDialog(
+                    context,
+                    btcWalletAddress,
+                    amount,
+                    selectedPackage,
+                    'BTC',
+                    true,
+                  );
+                },
+                icon: const Icon(Icons.arrow_forward_rounded, size: 20),
+                label: Text(
+                  "I Understand, Continue",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Back Button
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  "Go Back",
+                  style: GoogleFonts.inter(
+                    color: Colors.white60,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+// Info Row Widget
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _InfoRow({required this.icon, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, color: const Color(0xFFD4A017), size: 18),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: GoogleFonts.inter(color: Colors.white70, fontSize: 13),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// STEP 4: Show Fund Wallet Dialog (updated with payment method)
+void showFundWalletDialog(
+  BuildContext context,
+  String walletAddress,
+  double amount,
+  Map<String, dynamic> selectedPackage,
+  String paymentMethod,
+  bool hasNetworkFees,
 ) {
   showDialog(
     context: context,
@@ -304,7 +690,7 @@ void showFundWalletDialog(
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "\$${amount.toStringAsFixed(2)} USDT",
+                      "\$${amount.toStringAsFixed(2)} $paymentMethod",
                       style: GoogleFonts.inter(
                         color: const Color(0xFFD4A017),
                         fontSize: 24,
@@ -319,6 +705,38 @@ void showFundWalletDialog(
                         fontSize: 12,
                       ),
                     ),
+                    if (hasNetworkFees) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.add_circle_outline,
+                              color: Colors.orange,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              "Plus network fees",
+                              style: GoogleFonts.inter(
+                                color: Colors.orange,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -326,7 +744,9 @@ void showFundWalletDialog(
               const SizedBox(height: 16),
 
               Text(
-                "Send USDT (TRC20) to the wallet address below.",
+                paymentMethod == 'USDT'
+                    ? "Send USDT (TRC20) to the wallet address below."
+                    : "Send Bitcoin (BTC) to the wallet address below.",
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
                   color: Colors.white60,
@@ -352,7 +772,7 @@ void showFundWalletDialog(
                   children: [
                     Expanded(
                       child: Text(
-                        usdtWalletAddress,
+                        walletAddress,
                         style: GoogleFonts.inter(
                           color: Colors.white,
                           fontSize: 13,
@@ -367,11 +787,8 @@ void showFundWalletDialog(
                         size: 20,
                       ),
                       onPressed: () {
-                        Clipboard.setData(
-                          ClipboardData(text: usdtWalletAddress),
-                        );
+                        Clipboard.setData(ClipboardData(text: walletAddress));
 
-                        // Show success message
                         AuthService().showSuccessSnackBar(
                           context: context,
                           title: "Wallet address copied!",
@@ -397,11 +814,11 @@ void showFundWalletDialog(
                   elevation: 0,
                 ),
                 onPressed: () async {
-                  // Record transaction in Firestore
                   await _recordTransaction(
                     context,
                     amount,
                     selectedPackage['name'],
+                    paymentMethod,
                   );
 
                   if (selectedPackage['name'] == "Bronze") {
@@ -409,27 +826,30 @@ void showFundWalletDialog(
                       message:
                           "Admin Notification:\n"
                           "A new payment has been made/sent successfully.\n"
-                          "👤 User:  ${getStorage.read('fullname')}\n"
-                          "📧 Email:  ${FirebaseAuth.instance.currentUser!.email}\n"
-                          "💰 Amount:  \$$amount\n"
-                          "🏦 Package:  ${selectedPackage['name']}\n"
-                          "💰 Price Range:  \$${selectedPackage['min']} - \$${selectedPackage['max']}\n"
-                          "🕒 Time:  ${DateTime.now()}\n"
+                          "👤 User: ${getStorage.read('fullname')}\n"
+                          "📧 Email: ${FirebaseAuth.instance.currentUser!.email}\n"
+                          "💰 Amount: \$$amount\n"
+                          "💳 Payment Method: $paymentMethod\n"
+                          "🏦 Package: ${selectedPackage['name']}\n"
+                          "💰 Price Range: \$${selectedPackage['min']} - \$${selectedPackage['max']}\n"
+                          "🕒 Time: ${DateTime.now()}\n"
+                          "${hasNetworkFees ? '⚠️ Note: BTC network fees apply\n' : ''}"
                           "Please verify in your admin dashboard and ensure proper record updates.",
                     );
                   } else {
-                    ////send mail to confirm payment
                     sendEmail().sendMail(
                       message:
                           "Admin Notification:\n"
                           "A new payment has been made/sent successfully.\n"
-                          "👤 User:  ${getStorage.read('fullname')}\n"
-                          "📧 Email:  ${FirebaseAuth.instance.currentUser!.email}\n"
-                          "💰 Amount:  \$$amount\n"
-                          "💵 kick Start Fee:  \$${selectedPackage['kickStartFee']}\n"
-                          "🏦 Package:  ${selectedPackage['name']}\n"
-                          "💰 Price Range:  \$${selectedPackage['min']} - \$${selectedPackage['max']}\n"
-                          "🕒 Time:  ${DateTime.now()}\n"
+                          "👤 User: ${getStorage.read('fullname')}\n"
+                          "📧 Email: ${FirebaseAuth.instance.currentUser!.email}\n"
+                          "💰 Amount: \$$amount\n"
+                          "💳 Payment Method: $paymentMethod\n"
+                          "💵 Kick Start Fee: \$${selectedPackage['kickStartFee']}\n"
+                          "🏦 Package: ${selectedPackage['name']}\n"
+                          "💰 Price Range: \$${selectedPackage['min']} - \$${selectedPackage['max']}\n"
+                          "🕒 Time: ${DateTime.now()}\n"
+                          "${hasNetworkFees ? '⚠️ Note: BTC network fees apply\n' : ''}"
                           "Please verify in your admin dashboard and ensure proper record updates.",
                     );
                   }
@@ -463,18 +883,16 @@ void showFundWalletDialog(
   );
 }
 
-// STEP 3: Record Transaction to Firestore
+// STEP 5: Record Transaction to Firestore (updated)
 Future<void> _recordTransaction(
   BuildContext context,
   double amount,
   String packageName,
+  String paymentMethod,
 ) async {
   try {
     final uid = FirebaseAuth.instance.currentUser!.uid;
-    String activePackageData = '';
-    double numberOfRoundsData = 0.0;
 
-    // Add transaction to user's transactions collection
     await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
@@ -483,24 +901,23 @@ Future<void> _recordTransaction(
           'type': 'Deposit',
           'amount': amount,
           'packageName': packageName,
-          'status': 'Pending', // Pending until admin confirms
+          'status': 'Pending',
           'timestamp': FieldValue.serverTimestamp(),
-          'paymentMethod': 'USDT (TRC20)',
+          'paymentMethod': paymentMethod == 'USDT'
+              ? 'USDT (TRC20)'
+              : 'Bitcoin (BTC)',
         });
 
-    ///lock activation
     await FirebaseFirestore.instance.collection('users').doc(uid).update({
       'lockedActivation': true,
     });
 
-    // Show success message
     AuthService().showSuccessSnackBar(
       context: context,
       title: 'Payment confirmation recorded!',
       subTitle: 'Awaiting admin approval.',
     );
   } catch (e) {
-    // Show error message
     AuthService().showErrorSnackBar(
       context: context,
       title: "Error recording transaction:",

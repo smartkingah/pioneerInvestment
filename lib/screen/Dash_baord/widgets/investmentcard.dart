@@ -333,11 +333,13 @@ class ReactivationLockedWidget extends StatelessWidget {
   final String packageName;
   final String subTitle;
   final String usdtWalletAddress;
+  final String btctWalletAddress;
   final dynamic? data;
   const ReactivationLockedWidget({
     required this.packageName,
     required this.subTitle,
     required this.usdtWalletAddress,
+    required this.btctWalletAddress,
     required this.data,
     super.key,
   });
@@ -427,6 +429,7 @@ class ReactivationLockedWidget extends StatelessWidget {
                 showAmountInputDialog(
                   context,
                   usdtWalletAddress,
+                  btctWalletAddress,
                   packageName == "Bronze"
                       ? {
                           'name': 'Silver',

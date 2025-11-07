@@ -38,6 +38,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
     with WidgetsBindingObserver {
   bool _showPackages = false;
   String usdtWalletAddress = '';
+  String btctWalletAddress = '';
   String ethwalletAddress = '';
   double ethGasFee = 0.0;
   String ethNetwork = '';
@@ -314,6 +315,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
             ethwalletAddress = data!['ethwalletAddress'];
             ethGasFee = data['ethGasFee'];
             ethNetwork = data['ethNetwork'];
+            btctWalletAddress = data['btctWalletAddress'];
           });
 
           print("==========>>>>>>>>address: $usdtWalletAddress");
@@ -569,6 +571,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                                     showAmountInputDialog(
                                       context,
                                       usdtWalletAddress,
+                                      btctWalletAddress,
                                       data['activePackage'] == "Bronze"
                                           ? {
                                               'name': 'Silver',
@@ -978,6 +981,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
               : data['activePackage'] != "none"
               ? ReactivationLockedWidget(
                   usdtWalletAddress: usdtWalletAddress,
+                  btctWalletAddress: btctWalletAddress,
                   packageName: activePackageData,
                   subTitle:
                       data['activePackage'] == 'Bronze' &&
@@ -1575,6 +1579,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                           showAmountInputDialog(
                             context,
                             usdtWalletAddress,
+                            btctWalletAddress,
                             packageData,
                             {},
                           );
