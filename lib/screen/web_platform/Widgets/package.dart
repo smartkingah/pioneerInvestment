@@ -131,7 +131,7 @@ class InvestmentPackagesPage extends StatelessWidget {
                     _buildPackageCard(
                       title: 'Californium',
                       amount: '\$100,000 – \$500,000',
-                      returnRate: '50% every 30 days',
+                      returnRate: '50% every 10 days',
                       description: 'Long-term, high-value returns.',
                       icon: '🌴',
                       iconColor: const Color(0xFF228B22),
@@ -142,7 +142,7 @@ class InvestmentPackagesPage extends StatelessWidget {
                     _buildPackageCard(
                       title: 'Executive',
                       amount: '\$500,000 – \$1,000,000',
-                      returnRate: '70% profit',
+                      returnRate: '70% every 14 days',
                       description: 'For elite or institutional investors.',
                       icon: "👑",
                       iconColor: const Color(0xFFFFD700),

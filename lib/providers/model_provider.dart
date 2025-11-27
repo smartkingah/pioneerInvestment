@@ -10,19 +10,16 @@ class ModelProvider extends ChangeNotifier {
   ///seruserDatas
   setuserPhotUrlData({required String photoUrl}) {
     photoUrlData = photoUrl;
-
     notifyListeners();
   }
 
   setuserNameData({required String userName}) {
     userNameData = userName;
-
     notifyListeners();
   }
 
   setuSelectedPackage({required String selectedPackageData}) {
     selectedPackage = selectedPackageData;
-
     notifyListeners();
   }
 
