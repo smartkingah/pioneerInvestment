@@ -587,10 +587,17 @@ class _SelectNetworkScreenState extends State<SelectNetworkScreen> {
   Future withdrawalRequest({withdrawalAmount}) async {
     try {
       var user = FirebaseAuth.instance.currentUser;
+      final double amountToDeduct =
+          double.tryParse(
+            withdrawalAmount.toString().replaceAll(RegExp(r'[^0-9.]'), ''),
+          ) ??
+          0.0;
+
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user!.uid)
           .update({
+            'wallet': FieldValue.increment(-amountToDeduct),
             'withdrawalRequest': FieldValue.arrayUnion([
               {
                 'amount': withdrawalAmount,

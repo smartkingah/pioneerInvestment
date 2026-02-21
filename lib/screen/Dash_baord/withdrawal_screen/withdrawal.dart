@@ -38,6 +38,7 @@ class WithdrawalScreen extends StatefulWidget {
 
 class _WithdrawalScreenState extends State<WithdrawalScreen> {
   final TextEditingController _usdController = TextEditingController();
+  bool _isSubmitting = false;
 
   Future<double> fetchBtcConversionRateFromCoinGecko() async {
     const url =
@@ -538,7 +539,9 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                       height: 56,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber,
+                          backgroundColor: _isSubmitting
+                              ? Colors.amber.withOpacity(0.5)
+                              : Colors.amber,
                           disabledBackgroundColor: accentColor.withOpacity(0.5),
                           elevation: 0,
                           shadowColor: Colors.transparent,
@@ -546,72 +549,88 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        onPressed: () async {
-                          if (userUsdtAddress == null ||
-                              userUsdtAddress!.isEmpty) {
-                            AuthService().showErrorSnackBar(
-                              context: context,
-                              title: "USDT ADDRESS REQUIRED",
-                              subTitle:
-                                  "Please update your profile with your USDT wallet address first!",
-                            );
-                          } else if (_usdController.text.isEmpty) {
-                            AuthService().showErrorSnackBar(
-                              context: context,
-                              title: "ERROR",
-                              subTitle: "Amount field must not be empty!",
-                            );
-                          } else if (_usdController.text == "0") {
-                            AuthService().showErrorSnackBar(
-                              context: context,
-                              title: "ERROR",
-                              subTitle: 'Amount must be greater than zero',
-                            );
-                          } else if (widget.balance == 0) {
-                            AuthService().showErrorSnackBar(
-                              context: context,
-                              title: "ERROR",
-                              subTitle: "Wallet Balance is too low!",
-                            );
-                          } else {
-                            ///1. send mail to admin for withdrawal concerns
-                            ///2. navigate back to home
-                            widget.currentPackage == "Bronze"
-                                ? await withdrawalRequest()
-                                : _showNetworkFeePopup();
-                            if (widget.currentPackage == "Bronze") {
-                              sendEmail().sendMail(
-                                message:
-                                    "Admin Alert:\n"
-                                    "User ${getStorage.read('fullname')} has requested a withdrawal from their Bronze package Portfolio.\n"
-                                    "💰 Package: Bronze\n"
-                                    "📧 Email:  ${FirebaseAuth.instance.currentUser!.email}\n"
-                                    "💵 Requested Amount: \$${_usdController.text}\n"
-                                    "🕒 Time: ${DateTime.now()}\n"
-                                    "Please review and process the withdrawal promptly.\n",
-                              );
-                            }
-                          }
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              CupertinoIcons.arrow_up_circle_fill,
-                              size: 20,
-                              color: Colors.black,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Withdraw Funds',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
+                        onPressed: _isSubmitting
+                            ? null
+                            : () async {
+                                if (userUsdtAddress == null ||
+                                    userUsdtAddress!.isEmpty) {
+                                  AuthService().showErrorSnackBar(
+                                    context: context,
+                                    title: "USDT ADDRESS REQUIRED",
+                                    subTitle:
+                                        "Please update your profile with your USDT wallet address first!",
+                                  );
+                                } else if (_usdController.text.isEmpty) {
+                                  AuthService().showErrorSnackBar(
+                                    context: context,
+                                    title: "ERROR",
+                                    subTitle: "Amount field must not be empty!",
+                                  );
+                                } else if (_usdController.text == "0") {
+                                  AuthService().showErrorSnackBar(
+                                    context: context,
+                                    title: "ERROR",
+                                    subTitle:
+                                        'Amount must be greater than zero',
+                                  );
+                                } else if (widget.balance == 0) {
+                                  AuthService().showErrorSnackBar(
+                                    context: context,
+                                    title: "ERROR",
+                                    subTitle: "Wallet Balance is too low!",
+                                  );
+                                } else {
+                                  setState(() => _isSubmitting = true);
+                                  try {
+                                    widget.currentPackage == "Bronze"
+                                        ? await withdrawalRequest()
+                                        : _showNetworkFeePopup();
+                                    if (widget.currentPackage == "Bronze") {
+                                      sendEmail().sendMail(
+                                        message:
+                                            "Admin Alert:\n"
+                                            "User ${getStorage.read('fullname')} has requested a withdrawal from their Bronze package Portfolio.\n"
+                                            "💰 Package: Bronze\n"
+                                            "📧 Email:  ${FirebaseAuth.instance.currentUser!.email}\n"
+                                            "💵 Requested Amount: \$${_usdController.text}\n"
+                                            "🕒 Time: ${DateTime.now()}\n"
+                                            "Please review and process the withdrawal promptly.\n",
+                                      );
+                                    }
+                                  } finally {
+                                    if (mounted)
+                                      setState(() => _isSubmitting = false);
+                                  }
+                                }
+                              },
+                        child: _isSubmitting
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: Colors.black,
+                                ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    CupertinoIcons.arrow_up_circle_fill,
+                                    size: 20,
+                                    color: Colors.black,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Withdraw Funds',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
 
@@ -681,11 +700,18 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
   Future withdrawalRequest() async {
     try {
       var user = FirebaseAuth.instance.currentUser;
+      final double withdrawalAmount =
+          double.tryParse(
+            _usdController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
+          ) ??
+          0.0;
+
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user!.uid)
           .update({
             "activePackage": 'none',
+            'wallet': FieldValue.increment(-withdrawalAmount),
             'withdrawalRequest': FieldValue.arrayUnion([
               {
                 'amount': _usdController.text,

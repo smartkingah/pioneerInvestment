@@ -515,6 +515,43 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                         ],
                       ),
                     ),
+                    // Pending Withdrawal Badge
+                    if (withdrawalRequests.any((r) => r['status'] == 'pending'))
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFD400).withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: const Color(0xFFFFD400).withOpacity(0.5),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.access_time_rounded,
+                              color: Color(0xFFFFD400),
+                              size: 13,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              "Pending\nWithdrawal",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 10,
+                                color: const Color(0xFFFFD400),
+                                fontWeight: FontWeight.w600,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
 
@@ -1511,201 +1548,209 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
       builder: (context) => Dialog(
         backgroundColor: const Color(0xFF1C1C1E),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 500),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFFD4A017).withOpacity(0.2),
-                      const Color(0xFFD4A017).withOpacity(0.05),
-                    ],
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: 500,
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFFD4A017).withOpacity(0.2),
+                        const Color(0xFFD4A017).withOpacity(0.05),
+                      ],
+                    ),
+                    shape: BoxShape.circle,
                   ),
-                  shape: BoxShape.circle,
+                  child: const Icon(
+                    Icons.workspace_premium_rounded,
+                    color: Color(0xFFD4A017),
+                    size: 36,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.workspace_premium_rounded,
-                  color: Color(0xFFD4A017),
-                  size: 36,
+                const SizedBox(height: 20),
+                Text(
+                  "Select Investment Package",
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                "Select Investment Package",
-                style: GoogleFonts.inter(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                const SizedBox(height: 8),
+                Text(
+                  "Choose your preferred investment tier",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(color: Colors.white60, fontSize: 14),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Choose your preferred investment tier",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(color: Colors.white60, fontSize: 14),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              // Package List
-              Container(
-                constraints: const BoxConstraints(maxHeight: 400),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: packages.length,
-                  itemBuilder: (context, index) {
-                    final p = packages[index];
-                    final packageData = investmentPackages[index];
+                // Package List
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 400),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: packages.length,
+                    itemBuilder: (context, index) {
+                      final p = packages[index];
+                      final packageData = investmentPackages[index];
 
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: InkWell(
-                        onTap: () async {
-                          // Navigator.pop(context);
-                          // setState(() {
-                          //   _selectedPackage = packageData;
-                          // });
-                          // // Show fund wallet dialog after selection
-                          // showFundWalletDialog(context, usdtWalletAddress);
-                          //  {'name': 'Bronze', 'min': 50, 'max': 499, 'roi': 10, 'durationDays': 1},
-                          // Provider.of<ModelProvider>(context,listen: false).setuSelectedPackage(selectedPackageData: pa)
-                          Navigator.pop(context);
-                          // Show fund wallet dialog
-                          showAmountInputDialog(
-                            context,
-                            usdtWalletAddress,
-                            btctWalletAddress,
-                            packageData,
-                            {},
-                          );
-                          //   //   "rate": p["rate"],
-                          //   //   "color": p["color"],
-                          //   // },
-                          // );
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: InkWell(
+                          onTap: () async {
+                            // Navigator.pop(context);
+                            // setState(() {
+                            //   _selectedPackage = packageData;
+                            // });
+                            // // Show fund wallet dialog after selection
+                            // showFundWalletDialog(context, usdtWalletAddress);
+                            //  {'name': 'Bronze', 'min': 50, 'max': 499, 'roi': 10, 'durationDays': 1},
+                            // Provider.of<ModelProvider>(context,listen: false).setuSelectedPackage(selectedPackageData: pa)
+                            Navigator.pop(context);
+                            // Show fund wallet dialog
+                            showAmountInputDialog(
+                              context,
+                              usdtWalletAddress,
+                              btctWalletAddress,
+                              packageData,
+                              {},
+                            );
+                            //   //   "rate": p["rate"],
+                            //   //   "color": p["color"],
+                            //   // },
+                            // );
 
-                          // showFundWalletDialog(
-                          //   context,
-                          //   usdtWalletAddress,
-                          //   packageData['min'],
-                          //   packageData,
-                          // );
-                          // Store the selected package to Firestore
-                          await _storePendingPackage(packageData);
-                        },
-                        borderRadius: BorderRadius.circular(12),
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF2C2C2E),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: const Color(0xFF3C3C3E),
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              // Icon
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: (p["color"] as Color).withOpacity(
-                                    0.15,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Icon(
-                                  Icons.workspace_premium_outlined,
-                                  color: p["color"],
-                                  size: 24,
-                                ),
+                            // showFundWalletDialog(
+                            //   context,
+                            //   usdtWalletAddress,
+                            //   packageData['min'],
+                            //   packageData,
+                            // );
+                            // Store the selected package to Firestore
+                            await _storePendingPackage(packageData);
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2C2C2E),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: const Color(0xFF3C3C3E),
+                                width: 1.5,
                               ),
-                              const SizedBox(width: 16),
+                            ),
+                            child: Row(
+                              children: [
+                                // Icon
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: (p["color"] as Color).withOpacity(
+                                      0.15,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Icon(
+                                    Icons.workspace_premium_outlined,
+                                    color: p["color"],
+                                    size: 24,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
 
-                              // Details
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      p["name"],
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      p["range"],
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white70,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: const Color(
-                                          0xFFD4A017,
-                                        ).withOpacity(0.15),
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Text(
-                                        p["rate"],
+                                // Details
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        p["name"],
                                         style: GoogleFonts.inter(
-                                          color: const Color(0xFFD4A017),
-                                          fontSize: 12,
+                                          color: Colors.white,
+                                          fontSize: 16,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        p["range"],
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white70,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(
+                                            0xFFD4A017,
+                                          ).withOpacity(0.15),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          p["rate"],
+                                          style: GoogleFonts.inter(
+                                            color: const Color(0xFFD4A017),
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
 
-                              // Arrow
-                              const Icon(
-                                Icons.arrow_forward_ios_rounded,
-                                color: Colors.white30,
-                                size: 16,
-                              ),
-                            ],
+                                // Arrow
+                                const Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: Colors.white30,
+                                  size: 16,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Cancel Button
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white60,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-                child: Text(
-                  "Cancel",
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
+                      );
+                    },
                   ),
                 ),
-              ),
-            ],
+
+                const SizedBox(height: 20),
+
+                // Cancel Button
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white60,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: Text(
+                    "Cancel",
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
