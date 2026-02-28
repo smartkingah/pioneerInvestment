@@ -605,56 +605,29 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () {
-                                    showAmountInputDialog(
-                                      context,
-                                      usdtWalletAddress,
-                                      btctWalletAddress,
-                                      data['activePackage'] == "Bronze"
-                                          ? {
-                                              'name': 'Silver',
-                                              'min': 1000,
-                                              'max': 4999,
-                                              'roi': 20,
-                                              'durationDays': 2,
-                                              "kickStartFee": 500,
-                                            }
-                                          : data['activePackage'] == "Silver"
-                                          ? {
-                                              'name': 'Gold',
-                                              'min': 5000,
-                                              'max': 19999,
-                                              'roi': 25,
-                                              'durationDays': 4,
-                                              "kickStartFee": 1000,
-                                            }
-                                          : data['activePackage'] == "Gold"
-                                          ? {
-                                              'name': 'Platinum',
-                                              'min': 20000,
-                                              'max': 99999,
-                                              'roi': 30,
-                                              'durationDays': 7,
-                                              "kickStartFee": 1500,
-                                            }
-                                          : data['activePackage'] == "Platinum"
-                                          ? {
-                                              'name': 'Californium',
-                                              'min': 100000,
-                                              'max': 499999,
-                                              'roi': 50,
-                                              'durationDays': 30,
-                                              "kickStartFee": 10000,
-                                            }
-                                          : {
-                                              'name': 'Executive',
-                                              'min': 500000,
-                                              'max': 1000000,
-                                              'roi': 70,
-                                              'durationDays': 90,
-                                              "kickStartFee": 50000,
-                                            },
-                                      data,
-                                    );
+                                    if (data['activePackage'] == "none") {
+                                      _showPackageSelectionDialog(
+                                        context,
+                                        data,
+                                      );
+                                    } else {
+                                      // Find matching package details and go straight to amount input
+                                      final activePkgData = investmentPackages
+                                          .firstWhere(
+                                            (pkg) =>
+                                                pkg['name'] ==
+                                                data['activePackage'],
+                                            orElse: () => investmentPackages
+                                                .first, // fallback
+                                          );
+                                      showSimpleAmountInputDialog(
+                                        context,
+                                        usdtWalletAddress,
+                                        btctWalletAddress,
+                                        activePkgData,
+                                        data,
+                                      );
+                                    }
                                   },
                                   borderRadius: BorderRadius.circular(12),
                                   child: Padding(
@@ -742,7 +715,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                                   (req) => req['status'] == 'pending',
                                 ));
                                 data["activePackage"] == "none" && isPending
-                                    ? _showPackageSelectionDialog(context)
+                                    ? _showPackageSelectionDialog(context, data)
                                     : isPending
                                     ? AuthService().showWarningSnackBar(
                                         context,
@@ -750,7 +723,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                                         'You have a pending withdrawal request. Please wait for it to be processed before making a new one.',
                                       )
                                     : data["activePackage"] == "none"
-                                    ? _showPackageSelectionDialog(context)
+                                    ? _showPackageSelectionDialog(context, data)
                                     : data["activePackage"] == "Bronze" ||
                                           data["activePackage"] == "Californium"
                                     ? Get.to(
@@ -850,7 +823,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
               : SizedBox(),
 
           ///active package
-          if (_pendingPackage != null) ...[
+          if (_pendingPackage != null && data['activePackage'] == 'none') ...[
             // Activate Package Card
             Container(
               padding: const EdgeInsets.all(20),
@@ -1541,7 +1514,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
   }
 
   // 2. Replace your Fund Wallet button onPressed with this:
-  void _showPackageSelectionDialog(context) {
+  void _showPackageSelectionDialog(context, data) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1622,7 +1595,7 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                               usdtWalletAddress,
                               btctWalletAddress,
                               packageData,
-                              {},
+                              data,
                             );
                             //   //   "rate": p["rate"],
                             //   //   "color": p["color"],
