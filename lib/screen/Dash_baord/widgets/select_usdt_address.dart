@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:investmentpro/Services/authentication_services.dart';
 import 'package:investmentpro/Services/email_service.dart';
+import 'package:investmentpro/providers/model_provider.dart';
+import 'package:provider/provider.dart';
 
 // STEP 1: Show Amount Input Dialog
 void showAmountInputDialog(
@@ -328,9 +330,9 @@ void showSimpleAmountInputDialog(
                     if (amount == null) {
                       return 'Please enter a valid number';
                     }
-                    if (amount < selectedPackage['min']) {
-                      return 'Minimum amount is \$${selectedPackage['min']}';
-                    }
+                    // if (amount < selectedPackage['min']) {
+                    //   return 'Minimum amount is \$${selectedPackage['min']}';
+                    // }
                     return null;
                   },
                 ),
@@ -1073,9 +1075,16 @@ Future<void> _recordTransaction(
               : 'Bitcoin (BTC)',
         });
 
-    await FirebaseFirestore.instance.collection('users').doc(uid).update({
-      'lockedActivation': true,
-    });
+    ///once am funding my wallet only i dont ant to lock my activation
+    var justFundedWallet = Provider.of<ModelProvider>(
+      context,
+      listen: false,
+    ).isJustFundWallet;
+    justFundedWallet == true
+        ? null
+        : await FirebaseFirestore.instance.collection('users').doc(uid).update({
+            'lockedActivation': true,
+          });
 
     AuthService().showSuccessSnackBar(
       context: context,

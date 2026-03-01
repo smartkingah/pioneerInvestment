@@ -6,6 +6,13 @@ class ModelProvider extends ChangeNotifier {
   String photoUrlData = '';
   String userNameData = '';
   String selectedPackage = "";
+  bool isJustFundWallet = false;
+
+  ///seruserDatas
+  setIsJustFundWalletData({required bool data}) {
+    isJustFundWallet = data;
+    notifyListeners();
+  }
 
   ///seruserDatas
   setuserPhotUrlData({required String photoUrl}) {

@@ -604,13 +604,17 @@ class _InvestmentDashboardState extends State<InvestmentDashboard>
                               child: Material(
                                 color: Colors.transparent,
                                 child: InkWell(
-                                  onTap: () {
+                                  onTap: () async {
                                     if (data['activePackage'] == "none") {
                                       _showPackageSelectionDialog(
                                         context,
                                         data,
                                       );
                                     } else {
+                                      await Provider.of<ModelProvider>(
+                                        context,
+                                        listen: false,
+                                      ).setIsJustFundWalletData(data: true);
                                       // Find matching package details and go straight to amount input
                                       final activePkgData = investmentPackages
                                           .firstWhere(
